@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\GroceryList;
-use App\Models\ProductPrice;
+use App\Models\Establishment;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,19 +14,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grocery_list_items', function (Blueprint $table) {
+        Schema::create('product_prices', function (Blueprint $table) {
             $table->charset("utf8mb4");
             $table->collation("utf8mb4_unicode_ci");
 
             $table->id();
-            $table->foreignIdFor(GroceryList::class);
-            $table->foreignIdFor(ProductPrice::class);
-            $table->boolean("is_done")->default(0);
-            $table->unsignedTinyInteger("quantity");
+            $table->foreignIdFor(User::class, "added_by")->constraint();
+            $table->foreignIdFor(Product::class)->constraint();
+            $table->foreignIdFor(Establishment::class)->constraint();
             $table->decimal("price");
-            $table->decimal("subtotal")->storedAs("quantity * price");
             $table->timestamps(precision: 3);
-            $table->softdeletes("deleted_at", precision: 3);
+            $table->softdeletes('deleted_at', precision: 3);
+
+            $table->index(["added_by", "product_id", "establishment_id"]);
         });
     }
 
@@ -34,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grocery_list_items');
+        Schema::dropIfExists('product_prices');
     }
 };

@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barangays', function (Blueprint $table) {
+        Schema::create('store_types', function (Blueprint $table) {
+            $table->charset("utf8mb4");
+            $table->collation("utf8mb4_unicode_ci");
+
             $table->id();
-            $table->timestamps();
+            $table->string("name", length: 100)->fulltext();
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barangays');
+        Schema::dropIfExists('store_types');
     }
 };

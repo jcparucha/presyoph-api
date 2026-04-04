@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('muncities', function (Blueprint $table) {
+        Schema::create('regions', function (Blueprint $table) {
+            $table->charset("utf8mb4");
+            $table->collation("utf8mb4_unicode_ci");
+
             $table->id();
-            $table->timestamps();
+            $table->string("code", length: 9);
+            $table->string("description", length: 255);
         });
     }
 
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('muncities');
+        Schema::dropIfExists('regions');
     }
 };

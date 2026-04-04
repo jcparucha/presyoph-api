@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Product;
-use App\Models\Tag;
+use App\Models\MunCity;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,15 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_tag', function (Blueprint $table) {
+        Schema::create('barangays', function (Blueprint $table) {
             $table->charset("utf8mb4");
             $table->collation("utf8mb4_unicode_ci");
 
             $table->id();
-            $table->foreignIdFor(Product::class);
-            $table->foreignIdFor(Tag::class);
-            $table->timestamps(precision: 3);
-            $table->softdeletes('deleted_at', precision: 3);
+            $table->foreignIdFor(MunCity::class)->constrained();
+            $table->string("code", length: 9);
+            $table->string("description", length: 255);
+
+            $table->index("mun_city_id");
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_tag');
+        Schema::dropIfExists('barangays');
     }
 };

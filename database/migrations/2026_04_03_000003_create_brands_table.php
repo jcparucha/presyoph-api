@@ -12,16 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table) {
             $table->charset("utf8mb4");
             $table->collation("utf8mb4_unicode_ci");
 
             $table->id();
-            $table->string("name", length: 100);
-            $table->string("description", length: 255);
+            $table->string("name", length: 100)->fulltext();
             $table->foreignIdFor(User::class, "added_by")->nullable();
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
+
+            $table->index(["added_by"]);
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('brands');
     }
 };
