@@ -11,6 +11,13 @@ class Establishment extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'barangay_code',
+        'store_type_id',
+        'added_by',
+    ];
+
     public function productPrices(): HasMany
     {
         return $this->hasMany(ProductPrice::class);
@@ -18,7 +25,7 @@ class Establishment extends Model
 
     public function barangay(): BelongsTo
     {
-        return $this->belongsTo(Barangay::class);
+        return $this->belongsTo(Barangay::class, 'barangay_code', 'code');
     }
 
     public function storeType(): BelongsTo

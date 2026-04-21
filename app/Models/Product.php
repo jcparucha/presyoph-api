@@ -7,12 +7,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class Product extends Model
 {
     use SoftDeletes;
 
-    public function price(): HasMany
+    protected $fillable = [
+        'name',
+        'net_weight',
+        'unit_id',
+        'brand_id',
+        'category_id',
+        'added_by',
+    ];
+
+    public function prices(): HasMany
     {
         return $this->hasMany(ProductPrice::class);
     }
