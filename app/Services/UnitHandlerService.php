@@ -2,9 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Unit;
-use Exception;
-
 class UnitHandlerService
 {
     /**

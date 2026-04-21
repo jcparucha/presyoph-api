@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\AssertionTrait;
 use App\Models\Category;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryHandlerService
 {
+    use AssertionTrait;
+
     /**
      * Create a new class instance.
      */
@@ -24,12 +26,7 @@ class CategoryHandlerService
      */
     public function firstOrCreate(array $data): Category
     {
-        if (count(array_diff(['name', 'description'], array_keys($data)))) {
-            throw new Exception(
-                "The fields 'name' and 'description' are missing.",
-                1, // NOTE: search next time what's the proper code for this.
-            );
-        }
+        $this->assertRequiredKeys(['name', 'description'], $data);
 
         return Category::firstOrCreate(
             ['name' => $data['name']],

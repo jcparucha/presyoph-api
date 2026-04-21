@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\AssertionTrait;
 use App\Models\Establishment;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class EstablishmentHandlerService
 {
+    use AssertionTrait;
+
     /**
      * Create a new class instance.
      */
@@ -24,19 +26,10 @@ class EstablishmentHandlerService
      */
     public function firstOrCreate(array $data): Establishment
     {
-        if (
-            count(
-                array_diff(
-                    ['name', 'barangay_code', 'store_type_id'],
-                    array_keys($data),
-                ),
-            )
-        ) {
-            throw new Exception(
-                "The fields 'name', 'barangay_code', 'store_type_id' are missing.",
-                1, // NOTE: search next time what's the proper code for this.
-            );
-        }
+        $this->assertRequiredKeys(
+            ['name', 'barangay_code', 'store_type_id'],
+            $data,
+        );
 
         return Establishment::firstOrCreate(
             [

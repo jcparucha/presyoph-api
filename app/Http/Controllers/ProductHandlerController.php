@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 // use App\Contracts\ProductHandlerInterface;
 
-use App\Contracts\ProductHandlerInterface;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Brand;
 use App\Models\Product;
+use App\Services\ProductHandlerService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +20,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * TODO todo
  * - ✅ Product Price not yet final on the Product resource
- * - update product
+ * - ✅ update product
  * - add DB Transaction to the creation/updating of product
  * - add validation
  */
@@ -29,7 +28,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class ProductHandlerController extends Controller
 {
     public function __construct(
-        private ProductHandlerInterface $productHandler,
+        private ProductHandlerService $productHandler,
     ) {}
 
     /**
@@ -50,17 +49,15 @@ class ProductHandlerController extends Controller
     {
         $newProduct = $this->productHandler->create($request->all());
 
-        // TODO should send 201, with Product body and Link to product/new_product?
+        $newResourceLink = route('products.show', [
+            'product' => $newProduct->id,
+        ]);
+
         return $newProduct
             ->toResource()
-            ->additional([
-                'links' => [
-                    'related' => route('products.show', [
-                        'product' => $newProduct->id,
-                    ]),
-                ],
-            ])
+            ->additional(['links' => ['related' => $newResourceLink]])
             ->response()
+            ->header('Location', $newResourceLink)
             ->setStatusCode($newProduct->wasRecentlyCreated ? 201 : 200);
     }
 
@@ -78,8 +75,9 @@ class ProductHandlerController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $this->productHandler->update($request->all(), $product);
-        // return response()->json(['message' => 'Updated successfully.']);
+        return $this->productHandler
+            ->update($request->all(), $product)
+            ->toResource();
     }
 
     /**
