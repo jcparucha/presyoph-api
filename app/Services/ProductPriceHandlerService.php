@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\AssertionTrait;
+use App\Traits\AssertionTrait;
 use App\Models\ProductPrice;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +26,7 @@ class ProductPriceHandlerService
      */
     public function firstOrCreate(array $data): ProductPrice
     {
-        $this->assertRequiredKeys(
+        $this->assertShouldHaveKeys(
             ['product_id', 'establishment_id', 'price'],
             $data,
         );

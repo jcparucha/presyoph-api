@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\AssertionTrait;
+use App\Traits\AssertionTrait;
 use App\Models\Establishment;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +26,7 @@ class EstablishmentHandlerService
      */
     public function firstOrCreate(array $data): Establishment
     {
-        $this->assertRequiredKeys(
+        $this->assertShouldHaveKeys(
             ['name', 'barangay_code', 'store_type_id'],
             $data,
         );

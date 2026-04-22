@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\AssertionTrait;
+use App\Traits\AssertionTrait;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +26,7 @@ class BrandHandlerService
      */
     public function firstOrCreate(array $data): Brand
     {
-        $this->assertRequiredKeys(['name'], $data);
+        $this->assertShouldHaveKeys(['name'], $data);
 
         return Brand::firstOrCreate(
             ['name' => $data['name']],

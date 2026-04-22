@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\AssertionTrait;
+use App\Traits\AssertionTrait;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +26,7 @@ class CategoryHandlerService
      */
     public function firstOrCreate(array $data): Category
     {
-        $this->assertRequiredKeys(['name', 'description'], $data);
+        $this->assertShouldHaveKeys(['name', 'description'], $data);
 
         return Category::firstOrCreate(
             ['name' => $data['name']],

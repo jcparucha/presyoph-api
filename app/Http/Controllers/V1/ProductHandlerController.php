@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
-// use App\Contracts\ProductHandlerInterface;
-
+use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductHandlerService;
+use App\Traits\AssertionTrait;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,12 +22,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * TODO todo
  * - ✅ Product Price not yet final on the Product resource
  * - ✅ update product
- * - add DB Transaction to the creation/updating of product
- * - add validation
+ * - ✅ add DB Transaction to the creation/updating of product
+ * - add validation for Product Create and Update
  */
 
 class ProductHandlerController extends Controller
 {
+    use AssertionTrait;
+
     public function __construct(
         private ProductHandlerService $productHandler,
     ) {}
@@ -47,18 +50,27 @@ class ProductHandlerController extends Controller
      */
     public function store(Request $request)
     {
-        $newProduct = $this->productHandler->create($request->all());
+        try {
+            $newProduct = $this->productHandler->create($request->all());
 
-        $newResourceLink = route('products.show', [
-            'product' => $newProduct->id,
-        ]);
+            $this->assertShouldBeNotNull($newProduct);
 
-        return $newProduct
-            ->toResource()
-            ->additional(['links' => ['related' => $newResourceLink]])
-            ->response()
-            ->header('Location', $newResourceLink)
-            ->setStatusCode($newProduct->wasRecentlyCreated ? 201 : 200);
+            $newResourceLink = route('products.show', [
+                'product' => $newProduct->id,
+            ]);
+
+            return $newProduct
+                ->toResource()
+                ->additional(['links' => ['related' => $newResourceLink]])
+                ->response()
+                ->header('Location', $newResourceLink)
+                ->setStatusCode($newProduct->wasRecentlyCreated ? 201 : 200);
+        } catch (Exception $error) {
+            return response()->json(
+                ['message' => $error->getMessage()],
+                $error->getCode(),
+            );
+        }
     }
 
     /**

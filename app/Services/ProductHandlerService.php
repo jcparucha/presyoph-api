@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
-use App\AssertionTrait;
+use App\Traits\AssertionTrait;
 use App\Models\Product;
 use App\Models\Unit;
+use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ProductHandlerService
@@ -40,55 +42,66 @@ class ProductHandlerService
 
     public function create(array $data): Product
     {
-        // TODO add transaction
-        // try {
-        // DB::transaction(function () use ($data, &$product) {
-        $brand = $this->brandHandler->firstOrCreate(['name' => $data['brand']]);
+        try {
+            $product = null;
 
-        $category = $this->categoryHandler->firstOrCreate($data['category']);
+            DB::transaction(function () use ($data, &$product) {
+                $brand = $this->brandHandler->firstOrCreate([
+                    'name' => $data['brand'],
+                ]);
 
-        $unit = Unit::ofUnit($data['unit'])->first();
+                $category = $this->categoryHandler->firstOrCreate(
+                    $data['category'],
+                );
 
-        // Verify if the product is already existed, else create new record w/ User
-        $product = Product::firstOrCreate(
-            [
-                'name' => $data['name'],
-                'net_weight' => $data['net_weight'],
-                'unit_id' => $unit->id,
-                'brand_id' => $brand->id,
-                'category_id' => $category->id,
-            ],
-            ['added_by' => Auth::guard('web')->user()->id],
-        );
+                $unit = Unit::ofUnit($data['unit'])->first();
 
-        $newTags = $this->tagHandler->getNewTags($data['tags']);
+                // Verify if the product is already existed, else create new record w/ User
+                $product = Product::firstOrCreate(
+                    [
+                        'name' => $data['name'],
+                        'net_weight' => $data['net_weight'],
+                        'unit_id' => $unit->id,
+                        'brand_id' => $brand->id,
+                        'category_id' => $category->id,
+                    ],
+                    ['added_by' => Auth::guard('web')->user()->id],
+                );
 
-        // only sync tags if have new tags
-        if (count($newTags)) {
-            $product
-                ->tags()
-                ->syncWithPivotValuesOrFail($newTags, ['created_at' => now()]);
+                $newTags = $this->tagHandler->getNewTags($data['tags']);
+
+                // only sync tags if have new tags
+                if (count($newTags)) {
+                    $product->tags()->syncWithPivotValuesOrFail($newTags, [
+                        'created_at' => now(),
+                    ]);
+                }
+
+                // TODO add validation that the brgy_id is belonged to mun_city_id, and mun_city_id to province_id, and to region_id
+                $establishment = $this->establishmentHandler->firstOrCreate(
+                    $data['establishment'],
+                );
+
+                $this->productPriceHandler->firstOrCreate([
+                    'product_id' => $product->id,
+                    'establishment_id' => $establishment->id,
+                    'price' => $data['price'],
+                ]);
+            });
+
+            return !is_null($product)
+                ? $product->load([
+                    'brand',
+                    'category',
+                    'tags',
+                    'unit',
+                    'user',
+                    'prices',
+                ])
+                : null;
+        } catch (Exception $error) {
+            throw new Exception($error->getMessage(), 500);
         }
-
-        // TODO add validation that the brgy_id is belonged to mun_city_id, and mun_city_id to province_id, and to region_id
-        $establishment = $this->establishmentHandler->firstOrCreate(
-            $data['establishment'],
-        );
-
-        $this->productPriceHandler->firstOrCreate([
-            'product_id' => $product->id,
-            'establishment_id' => $establishment->id,
-            'price' => $data['price'],
-        ]);
-
-        return $product->load([
-            'brand',
-            'category',
-            'tags',
-            'unit',
-            'user',
-            'prices',
-        ]);
     }
 
     public function get(Product $product): Product
@@ -104,7 +117,6 @@ class ProductHandlerService
         ]);
     }
 
-    // TODO update value of product only!
     public function update(array $inputs, Product $product): Product
     {
         $unit = isset($inputs['unit'])
@@ -158,7 +170,7 @@ class ProductHandlerService
      */
     protected function isProductAlreadyExists(array $data): bool
     {
-        $this->assertRequiredKeys(
+        $this->assertShouldHaveKeys(
             ['id', 'name', 'net_weight', 'unit_id', 'brand_id'],
             $data,
         );
@@ -180,12 +192,12 @@ class ProductHandlerService
      */
     protected function updateProduct(Product $product, array $data)
     {
-        $this->assertRequiredKeys(
+        $this->assertShouldHaveKeys(
             ['id', 'name', 'net_weight', 'unit_id', 'brand_id', 'category_id'],
             $data,
         );
 
-        $this->assertIsInt($data['net_weight']);
+        $this->assertShouldBeInteger($data['net_weight']);
 
         if ($product->name !== $data['name']) {
             $product->name = $data['name'];
