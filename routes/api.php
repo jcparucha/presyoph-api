@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
-use App\Http\Controllers\V1\ProductHandlerController;
+use App\Http\Controllers\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +39,7 @@ Route::prefix('/v1')->group(function () {
     }
 
     Route::middleware(['auth:sanctum'])
-        ->controller(ProductHandlerController::class)
+        ->controller(ProductController::class)
         ->missing(modelNotFound('product'))
         ->name('products.')
         ->group(function () {

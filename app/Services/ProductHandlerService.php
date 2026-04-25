@@ -6,9 +6,12 @@ use App\Traits\AssertionTrait;
 use App\Models\Product;
 use App\Models\Unit;
 use Exception;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ProductHandlerService
@@ -119,37 +122,11 @@ class ProductHandlerService
 
     public function update(array $inputs, Product $product): Product
     {
-        $unit = isset($inputs['unit'])
-            ? Unit::where('abbreviation', $inputs['unit'])->first()->id
-            : $product->unit_id;
+        $data = $this->generateProductData($product, $inputs);
 
-        $brand = isset($inputs['brand'])
-            ? $this->brandHandler->firstOrCreate(['name' => $inputs['brand']])
-                ->id
-            : $product->brand_id;
+        $this->validateIfUniqueProduct($data);
 
-        $category = isset($inputs['category'])
-            ? $this->categoryHandler->firstOrCreate($inputs['category'])->id
-            : $product->category_id;
-
-        $data = [
-            'id' => $product->id,
-            'name' => $inputs['name'] ?? $product->name,
-            'net_weight' =>
-                intval($inputs['net_weight']) ?? $product->net_weight,
-            'unit_id' => $unit,
-            'brand_id' => $brand,
-        ];
-
-        $isProductAlreadyExists = $this->isProductAlreadyExists($data);
-
-        if ($isProductAlreadyExists) {
-            // TODO throw proper error message and HTTP code
-            // > use ValidationException with 422 error
-            throw new ValidationException('Product already exists.', 422);
-        }
-
-        $this->updateProduct($product, ['category_id' => $category, ...$data]);
+        $this->updateProduct($product, $data);
 
         // call refresh() to re-hydrate the product
         return $product->refresh();
@@ -160,15 +137,46 @@ class ProductHandlerService
         return;
     }
 
+    protected function generateProductData(
+        Product $product,
+        array $inputs,
+    ): array {
+        $unit = isset($inputs['unit'])
+            ? Unit::where('abbreviation', $inputs['unit'])->first()->id
+            : $product->unit_id;
+
+        $brand = isset($inputs['brand'])
+            ? $this->brandHandler->firstOrCreate(['name' => $inputs['brand']])
+                ->id
+            : $product->brand_id;
+
+        $category = isset($inputs['category'])
+            ? $this->categoryHandler->firstOrCreate([
+                'description' => '',
+                ...$inputs['category'],
+            ])->id
+            : $product->category_id;
+
+        return [
+            'id' => $product->id,
+            'name' => $inputs['name'] ?? $product->name,
+            'net_weight' =>
+                intval($inputs['net_weight']) ?? $product->net_weight,
+            'unit_id' => $unit,
+            'brand_id' => $brand,
+            'category_id' => $category,
+        ];
+    }
+
     /**
      * Check if the changes being made in the product is already exists
      *
      * A product should be unique by its Brand, Name, Net Weight, and Unit
      *
      * @param array $data
-     * @return boolean
+     * @return void
      */
-    protected function isProductAlreadyExists(array $data): bool
+    protected function validateIfUniqueProduct(array $data): void
     {
         $this->assertShouldHaveKeys(
             ['id', 'name', 'net_weight', 'unit_id', 'brand_id'],
@@ -182,7 +190,13 @@ class ProductHandlerService
             ->where('brand_id', $data['brand_id'])
             ->first();
 
-        return !is_null($product);
+        if (!is_null($product)) {
+            throw ValidationException::withMessages([
+                'product' => __('validation.unique', [
+                    'attribute' => 'product',
+                ]),
+            ]);
+        }
     }
 
     /**

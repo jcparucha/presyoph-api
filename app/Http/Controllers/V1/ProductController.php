@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\NewProductRequest;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -23,10 +24,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * - ✅ Product Price not yet final on the Product resource
  * - ✅ update product
  * - ✅ add DB Transaction to the creation/updating of product
- * - add validation for Product Create and Update
+ * - add validation for Product Create and Update✅
+ * - should remove 'handler' on file name
  */
 
-class ProductHandlerController extends Controller
+class ProductController extends Controller
 {
     use AssertionTrait;
 
@@ -85,10 +87,10 @@ class ProductHandlerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(NewProductRequest $request, Product $product)
     {
         return $this->productHandler
-            ->update($request->all(), $product)
+            ->update($request->validated(), $product)
             ->toResource();
     }
 
