@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EstablishmentResource extends JsonResource
+class StoreTypeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +17,6 @@ class EstablishmentResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'barangay' => $this->barangay->toResource(),
-            'store_type' => $this->storeType->toResource(),
         ];
     }
 }

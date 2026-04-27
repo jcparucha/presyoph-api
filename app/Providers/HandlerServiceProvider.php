@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\ProductHandlerInterface;
-use App\Services\ProductHandlerService;
+use App\Services\ProductService;
 use Illuminate\Support\ServiceProvider;
 
 class HandlerServiceProvider extends ServiceProvider
@@ -21,9 +21,6 @@ class HandlerServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->bind(
-            ProductHandlerInterface::class,
-            ProductHandlerService::class,
-        );
+        $this->app->bind(ProductHandlerInterface::class, ProductService::class);
     }
 }

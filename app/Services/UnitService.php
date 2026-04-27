@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class UnitHandlerService
+class UnitService
 {
     /**
      * Create a new class instance.

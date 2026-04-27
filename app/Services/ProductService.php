@@ -6,15 +6,12 @@ use App\Traits\AssertionTrait;
 use App\Models\Product;
 use App\Models\Unit;
 use Exception;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class ProductHandlerService
+class ProductService
 {
     use AssertionTrait;
 
@@ -22,11 +19,11 @@ class ProductHandlerService
      * Create a new class instance.
      */
     public function __construct(
-        private BrandHandlerService $brandHandler,
-        private CategoryHandlerService $categoryHandler,
-        private EstablishmentHandlerService $establishmentHandler,
-        private ProductPriceHandlerService $productPriceHandler,
-        private TagHandlerService $tagHandler,
+        private BrandService $brandService,
+        private CategoryService $categoryService,
+        private EstablishmentService $establishmentService,
+        private ProductPriceService $productPriceService,
+        private TagService $tagService,
     ) {
         //
     }
@@ -49,47 +46,46 @@ class ProductHandlerService
             $product = null;
 
             DB::transaction(function () use ($data, &$product) {
-                $brand = $this->brandHandler->firstOrCreate([
+                $brand = $this->brandService->firstOrCreate([
                     'name' => $data['brand'],
                 ]);
 
-                $category = $this->categoryHandler->firstOrCreate(
+                $category = $this->categoryService->firstOrCreate(
                     $data['category'],
                 );
 
                 $unit = Unit::ofUnit($data['unit'])->first();
 
-                // Verify if the product is already existed, else create new record w/ User
                 $product = Product::firstOrCreate(
                     [
                         'name' => $data['name'],
                         'net_weight' => $data['net_weight'],
                         'unit_id' => $unit->id,
                         'brand_id' => $brand->id,
-                        'category_id' => $category->id,
                     ],
-                    ['added_by' => Auth::guard('web')->user()->id],
+                    [
+                        'category_id' => $category->id,
+                        'added_by' => Auth::guard('web')->user()->id,
+                    ],
                 );
 
-                $newTags = $this->tagHandler->getNewTags($data['tags']);
-
-                // only sync tags if have new tags
-                if (count($newTags)) {
-                    $product->tags()->syncWithPivotValuesOrFail($newTags, [
-                        'created_at' => now(),
-                    ]);
-                }
-
                 // TODO add validation that the brgy_id is belonged to mun_city_id, and mun_city_id to province_id, and to region_id
-                $establishment = $this->establishmentHandler->firstOrCreate(
+                $establishment = $this->establishmentService->firstOrCreate(
                     $data['establishment'],
                 );
 
-                $this->productPriceHandler->firstOrCreate([
+                // only create initial price for new product on an establishment
+                // to add/update a price, use POST product/{product}/price or PATCH product/{product}/price/{productprice}
+                $this->productPriceService->firstOrCreate([
                     'product_id' => $product->id,
                     'establishment_id' => $establishment->id,
                     'price' => $data['price'],
                 ]);
+
+                // only create product tags if it's a new product, else use POST product/{product}/tags to update tags
+                if ($product->wasRecentlyCreated) {
+                    $this->syncTags($product, $data['tags']);
+                }
             });
 
             return !is_null($product)
@@ -142,16 +138,16 @@ class ProductHandlerService
         array $inputs,
     ): array {
         $unit = isset($inputs['unit'])
-            ? Unit::where('abbreviation', $inputs['unit'])->first()->id
+            ? Unit::ofUnit($inputs['unit'])->first()->id
             : $product->unit_id;
 
         $brand = isset($inputs['brand'])
-            ? $this->brandHandler->firstOrCreate(['name' => $inputs['brand']])
+            ? $this->brandService->firstOrCreate(['name' => $inputs['brand']])
                 ->id
             : $product->brand_id;
 
         $category = isset($inputs['category'])
-            ? $this->categoryHandler->firstOrCreate([
+            ? $this->categoryService->firstOrCreate([
                 'description' => '',
                 ...$inputs['category'],
             ])->id
@@ -204,7 +200,7 @@ class ProductHandlerService
      * @param array $data
      * @return void
      */
-    protected function updateProduct(Product $product, array $data)
+    protected function updateProduct(Product $product, array $data): void
     {
         $this->assertShouldHaveKeys(
             ['id', 'name', 'net_weight', 'unit_id', 'brand_id', 'category_id'],
@@ -236,6 +232,23 @@ class ProductHandlerService
         // save if have changes made
         if ($product->isDirty()) {
             $product->save();
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @param array $tags
+     * @return void
+     */
+    protected function syncTags(Product $product, array $tags): void
+    {
+        $newTags = $this->tagService->getNewTags($tags);
+
+        // only sync tags if have new tags
+        if (count($newTags)) {
+            $product->tags()->syncWithPivotValuesOrFail($newTags, [
+                'created_at' => now(),
+            ]);
         }
     }
 }

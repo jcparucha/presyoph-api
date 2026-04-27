@@ -37,4 +37,17 @@ class Establishment extends Model
     {
         return $this->belongsTo(User::class, 'added_by');
     }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime:Y-m-d H:i:s.u',
+            'updated_at' => 'datetime:Y-m-d H:i:s.u',
+        ];
+    }
 }

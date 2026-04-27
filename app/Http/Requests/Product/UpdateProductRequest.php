@@ -1,14 +1,22 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Product;
 
 use App\Rules\AlphaCharNumSpace;
 use App\Rules\AlphaSpace;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class NewProductRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return false;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -21,7 +29,7 @@ class NewProductRequest extends FormRequest
                 'sometimes',
                 'required',
                 'min:3',
-                'max:100',
+                'max:50',
                 new AlphaCharNumSpace(),
             ],
             'net_weight' => [
@@ -37,10 +45,16 @@ class NewProductRequest extends FormRequest
                 'sometimes',
                 'required',
                 'min:3',
-                'max:100',
+                'max:50',
                 new AlphaCharNumSpace(),
             ],
-            'category.name' => ['min:3', 'max:100', new AlphaSpace()],
+            'category.name' => [
+                'sometimes',
+                'required',
+                'min:3',
+                'max:50',
+                new AlphaSpace(),
+            ],
         ];
     }
 
@@ -51,8 +65,6 @@ class NewProductRequest extends FormRequest
      */
     public function messages(): array
     {
-        return [
-            'category.name.present_with' => 'The category should have a name.',
-        ];
+        return [];
     }
 }

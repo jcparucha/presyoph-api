@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\Models\Tag;
+use App\Traits\AssertionTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-class TagHandlerService
+class TagService
 {
+    use AssertionTrait;
+
     /**
      * Create a new class instance.
      */
@@ -22,7 +25,7 @@ class TagHandlerService
      * @param array $tags
      * @return array
      */
-    public function getNewTags(array $tags): array
+    public function getNewTags(array $tags = []): array
     {
         $newTags = [];
 
@@ -31,17 +34,19 @@ class TagHandlerService
             return $newTags;
         }
 
-        $nonexistingTags = $this->getNonExistingTags($tags);
+        $nonExistingTags = $this->getNonExistingTags($tags);
 
-        if ($nonexistingTags->count() > 1) {
+        if ($nonExistingTags->count() > 1) {
             // if have new tag, insert to DB
-            Tag::insert($nonexistingTags->all());
+            Tag::insert($nonExistingTags->all());
 
             // get all tag ids.
             $newTags = Tag::whereIn('name', $tags)
                 ->get()
                 ->map(fn(Tag $tag) => $tag->id)
                 ->all();
+        } else {
+            $newTags = $this->getExistingTags($tags)->all();
         }
 
         return $newTags;
@@ -51,14 +56,19 @@ class TagHandlerService
      * Get all the existing tags in the DB based from the given array of tags
      *
      * @param array $tags
+     * @param array $field = choose the returned collection values; either tag 'id' or 'name'
      * @return Collection
      */
-    public function getExistingTags(array $tags): Collection
-    {
+    public function getExistingTags(
+        array $tags,
+        string $field = 'id',
+    ): Collection {
+        $this->assertShouldBeInArray(['id', 'name'], $field);
+
         return Tag::whereIn('name', $tags)
             ->get()
             ->filter(fn(Tag $tag) => in_array($tag->name, $tags))
-            ->map(fn(Tag $tag) => $tag->name);
+            ->map(fn(Tag $tag) => $tag[$field]);
     }
 
     /**
@@ -69,9 +79,16 @@ class TagHandlerService
      */
     public function getNonExistingTags(array $tags): Collection
     {
-        $existingTags = $this->getExistingTags($tags);
+        $tagsCollection = collect($tags);
 
-        return collect($tags)
+        // return empty array immediately if there's no new tag
+        if ($tagsCollection->count() === 0) {
+            return $tagsCollection;
+        }
+
+        $existingTags = $this->getExistingTags($tags, 'name');
+
+        return $tagsCollection
             ->diff($existingTags)
             ->transform(function (string $newTag) {
                 return [

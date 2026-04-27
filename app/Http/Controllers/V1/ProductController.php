@@ -3,38 +3,21 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\NewProductRequest;
 use App\Http\Requests\PaginationRequest;
+use App\Http\Requests\Product\NewProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use App\Services\ProductHandlerService;
+use App\Services\ProductService;
 use App\Traits\AssertionTrait;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
-/**
- * SECTION Product
- *
- * NOTE flow
- * - Product can't be deleted
- * - What to update on Product? (Brand, Name, Net Weight, Unit, Category)
- *
- * TODO todo
- * - ✅ Product Price not yet final on the Product resource
- * - ✅ update product
- * - ✅ add DB Transaction to the creation/updating of product
- * - add validation for Product Create and Update✅
- * - should remove 'handler' on file name
- */
 
 class ProductController extends Controller
 {
     use AssertionTrait;
 
-    public function __construct(
-        private ProductHandlerService $productHandler,
-    ) {}
+    public function __construct(private ProductService $productService) {}
 
     /**
      * Display a listing of the resource.
@@ -43,17 +26,17 @@ class ProductController extends Controller
     {
         // TODO per_page ?? 5 is for testing only, change to 20
         return ProductResource::collection(
-            $this->productHandler->all($request->per_page ?? 5),
+            $this->productService->all($request->per_page ?? 5),
         );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(NewProductRequest $request)
     {
         try {
-            $newProduct = $this->productHandler->create($request->all());
+            $newProduct = $this->productService->create($request->all());
 
             $this->assertShouldBeNotNull($newProduct);
 
@@ -80,16 +63,16 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        // return $this->productHandler->get($product);
-        return $this->productHandler->get($product)->toResource();
+        // return $this->productService->get($product);
+        return $this->productService->get($product)->toResource();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(NewProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        return $this->productHandler
+        return $this->productService
             ->update($request->validated(), $product)
             ->toResource();
     }

@@ -25,6 +25,19 @@ trait AssertionTrait
         }
     }
 
+    public function assertShouldBeInArray(array $haystack, mixed $needle)
+    {
+        if (!in_array($needle, $haystack)) {
+            throw new InvalidArgumentException(
+                'The ' .
+                    $needle .
+                    ' field is neither ' .
+                    join(' or', $haystack) .
+                    '.',
+            );
+        }
+    }
+
     /**
      * Check if the given value is integer.
      *

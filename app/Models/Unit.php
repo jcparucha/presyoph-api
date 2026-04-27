@@ -10,7 +10,7 @@ class Unit extends Model
 {
     public function scopeOfUnit(Builder $query, string $unit): void
     {
-        $query->where('name', $unit);
+        $query->where('abbreviation', $unit);
     }
 
     public function products(): HasMany

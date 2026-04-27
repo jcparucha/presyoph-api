@@ -6,7 +6,7 @@ use App\Traits\AssertionTrait;
 use App\Models\ProductPrice;
 use Illuminate\Support\Facades\Auth;
 
-class ProductPriceHandlerService
+class ProductPriceService
 {
     use AssertionTrait;
 
@@ -33,11 +33,13 @@ class ProductPriceHandlerService
 
         return ProductPrice::firstOrCreate(
             [
-                'price' => $data['price'],
                 'product_id' => $data['product_id'],
                 'establishment_id' => $data['establishment_id'],
             ],
-            ['added_by' => Auth::guard('web')->user()->id],
+            [
+                'price' => $data['price'],
+                'added_by' => Auth::guard('web')->user()->id,
+            ],
         );
     }
 }

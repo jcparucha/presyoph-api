@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Traits\AssertionTrait;
-use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryHandlerService
+class BrandService
 {
     use AssertionTrait;
 
@@ -22,18 +22,15 @@ class CategoryHandlerService
      * Create the existing record or create a new one
      *
      * @param array $data
-     * @return Category
+     * @return Brand
      */
-    public function firstOrCreate(array $data): Category
+    public function firstOrCreate(array $data): Brand
     {
-        $this->assertShouldHaveKeys(['name', 'description'], $data);
+        $this->assertShouldHaveKeys(['name'], $data);
 
-        return Category::firstOrCreate(
+        return Brand::firstOrCreate(
             ['name' => $data['name']],
-            [
-                'description' => $data['description'],
-                'added_by' => Auth::guard('web')->user()->id,
-            ],
+            ['added_by' => Auth::guard('web')->user()->id],
         );
     }
 }
