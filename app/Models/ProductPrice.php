@@ -11,6 +11,15 @@ class ProductPrice extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'product_prices';
+
+    protected $fillable = [
+        'added_by',
+        'product_id',
+        'establishment_id',
+        'price',
+    ];
+
     public function groceryListItems(): HasMany
     {
         return $this->hasMany(GroceryListItem::class);
@@ -23,11 +32,25 @@ class ProductPrice extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(product::class);
+        return $this->belongsTo(Product::class);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'added_by');
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'created_at' => 'datetime:Y-m-d H:i:s.u',
+            'updated_at' => 'datetime:Y-m-d H:i:s.u',
+        ];
     }
 }

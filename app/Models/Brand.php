@@ -11,6 +11,8 @@ class Brand extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = ['name', 'added_by'];
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
