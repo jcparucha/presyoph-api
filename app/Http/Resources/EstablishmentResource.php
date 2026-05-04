@@ -14,6 +14,7 @@ class EstablishmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // TODO add mun/city, province, and region
         return [
             'id' => $this->id,
             'name' => $this->name,

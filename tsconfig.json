@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": false
+    },
+    "exclude": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "tmp",
+        "vendor",
+        "storage",
+        "bootstrap/cache"
+    ]
+}

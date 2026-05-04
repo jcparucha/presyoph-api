@@ -15,6 +15,18 @@ class ProductService
 {
     use AssertionTrait;
 
+    private $eagerLoad = [
+        'brand',
+        'category',
+        'tags',
+        'unit',
+        'user',
+        'prices',
+        'prices.establishment',
+        'prices.establishment.barangay',
+        'prices.establishment.storeType',
+    ];
+
     /**
      * Create a new class instance.
      */
@@ -31,12 +43,10 @@ class ProductService
     public function all(int $perPage = 20): LengthAwarePaginator
     {
         return Product::with([
-            'brand',
-            'category',
-            'tags',
-            'unit',
-            'user',
-            'prices',
+            ...$this->eagerLoad,
+            'prices' => function ($query) {
+                $query->latestPerEstablishment();
+            },
         ])->paginate($perPage, ['*'], 'page');
     }
 
@@ -107,12 +117,10 @@ class ProductService
     {
         // eager load connections
         return $product->load([
-            'brand',
-            'category',
-            'tags',
-            'unit',
-            'user',
-            'prices',
+            ...$this->eagerLoad,
+            'prices' => function ($query) {
+                $query->latestPerEstablishment();
+            },
         ]);
     }
 

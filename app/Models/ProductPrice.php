@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,14 +21,14 @@ class ProductPrice extends Model
         'price',
     ];
 
-    public function groceryListItems(): HasMany
-    {
-        return $this->hasMany(GroceryListItem::class);
-    }
-
     public function establishment(): BelongsTo
     {
         return $this->belongsTo(Establishment::class);
+    }
+
+    public function groceryListItems(): HasMany
+    {
+        return $this->hasMany(GroceryListItem::class);
     }
 
     public function product(): BelongsTo
@@ -40,6 +41,17 @@ class ProductPrice extends Model
         return $this->belongsTo(User::class, 'added_by');
     }
 
+    // TODO Enhancement: Filtered by default place
+    public function scopeLatestPerEstablishment(Builder $query): void
+    {
+        $query->whereIn('id', function ($query) {
+            $query
+                ->selectRaw('MAX(id)')
+                ->from('product_prices')
+                ->groupBy('product_id', 'establishment_id');
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -47,10 +59,6 @@ class ProductPrice extends Model
      */
     protected function casts(): array
     {
-        return [
-            'price' => 'decimal:2',
-            'created_at' => 'datetime:Y-m-d H:i:s.u',
-            'updated_at' => 'datetime:Y-m-d H:i:s.u',
-        ];
+        return ['price' => 'float'];
     }
 }
