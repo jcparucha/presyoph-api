@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 
 class Product extends Model
@@ -22,16 +23,6 @@ class Product extends Model
         'added_by',
     ];
 
-    public function prices(): HasMany
-    {
-        return $this->hasMany(ProductPrice::class);
-    }
-
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class);
-    }
-
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
@@ -40,6 +31,16 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     public function unit(): BelongsTo
@@ -52,6 +53,14 @@ class Product extends Model
         return $this->belongsTo(User::class, 'added_by');
     }
 
+    // TODO Enhancement: Filtered by default place
+    public function getLatestPricePerEstablishment(): Collection
+    {
+        return $this->prices()->latestPerEstablishment()->get();
+    }
+
+    // TODO Enhancement: add a cheapest price
+
     /**
      * Get the attributes that should be cast.
      *
@@ -59,10 +68,6 @@ class Product extends Model
      */
     protected function casts(): array
     {
-        return [
-            'net_weight' => 'integer',
-            'created_at' => 'datetime:Y-m-d H:i:s.u',
-            'updated_at' => 'datetime:Y-m-d H:i:s.u',
-        ];
+        return ['net_weight' => 'integer'];
     }
 }

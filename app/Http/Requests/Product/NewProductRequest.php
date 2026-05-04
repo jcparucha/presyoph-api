@@ -27,7 +27,7 @@ class NewProductRequest extends FormRequest
             ],
             'unit' => ['required', 'exists:units,abbreviation'],
             'brand' => ['required', 'min:3', 'max:50', new AlphaCharNumSpace()],
-            'price' => ['required', 'decimal:0,2', 'min:1', 'max:1000000'],
+            'price' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
             'category.name' => [
                 'required',
                 'min:3',

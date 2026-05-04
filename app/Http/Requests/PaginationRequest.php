@@ -15,10 +15,9 @@ class PaginationRequest extends FormRequest
      */
     public function rules(): array
     {
-        // TODO: remove per_page: 5 <- this is a test only
         return [
             'page' => ['integer', 'numeric', 'min:1'],
-            'per_page' => ['integer', 'numeric', Rule::in([5, 10, 20, 30])],
+            'per_page' => ['integer', 'numeric', Rule::in([20, 50, 100])],
         ];
     }
 }

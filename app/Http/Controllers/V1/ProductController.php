@@ -24,9 +24,8 @@ class ProductController extends Controller
      */
     public function index(PaginationRequest $request): JsonResource
     {
-        // TODO per_page ?? 5 is for testing only, change to 20
         return ProductResource::collection(
-            $this->productService->all($request->per_page ?? 5),
+            $this->productService->all($request->per_page),
         );
     }
 
