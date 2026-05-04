@@ -41,6 +41,11 @@ class ProductPrice extends Model
         return $this->belongsTo(User::class, 'added_by');
     }
 
+    public function scopeEstablishment(Builder $query, int $id): void
+    {
+        $query->where('establishment_id', $id);
+    }
+
     // TODO Enhancement: Filtered by default place
     public function scopeLatestPerEstablishment(Builder $query): void
     {

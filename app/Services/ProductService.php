@@ -100,12 +100,10 @@ class ProductService
 
             return !is_null($product)
                 ? $product->load([
-                    'brand',
-                    'category',
-                    'tags',
-                    'unit',
-                    'user',
-                    'prices',
+                    ...$this->eagerLoad,
+                    'prices' => function ($query) {
+                        $query->latestPerEstablishment();
+                    },
                 ])
                 : null;
         } catch (Exception $error) {

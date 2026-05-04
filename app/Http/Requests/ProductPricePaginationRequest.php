@@ -6,7 +6,7 @@ use App\Traits\HasPagination;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaginationRequest extends FormRequest
+class ProductPricePaginationRequest extends FormRequest
 {
     use HasPagination;
 
@@ -17,6 +17,14 @@ class PaginationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->paginationRules();
+        return [
+            ...$this->paginationRules(),
+            'establishment_id' => [
+                'sometimes',
+                'required',
+                'integer',
+                'exists:establishments,id',
+            ],
+        ];
     }
 }
