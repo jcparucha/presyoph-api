@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\ProductPrice;
 
-use App\Traits\HasPagination;
+use App\Traits\Validations\HasEstablishment;
+use App\Traits\Validations\HasPagination;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductPricePaginationRequest extends FormRequest
+class PaginationRequest extends FormRequest
 {
-    use HasPagination;
+    use HasPagination, HasEstablishment;
 
     /**
      * Get the validation rules that apply to the request.
@@ -19,12 +20,7 @@ class ProductPricePaginationRequest extends FormRequest
     {
         return [
             ...$this->paginationRules(),
-            'establishment_id' => [
-                'sometimes',
-                'required',
-                'integer',
-                'exists:establishments,id',
-            ],
+            'establishment_id' => $this->establishmentRule(true),
         ];
     }
 }

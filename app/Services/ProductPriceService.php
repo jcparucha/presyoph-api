@@ -13,6 +13,8 @@ class ProductPriceService
 {
     use AssertionTrait;
 
+    private $user_id;
+
     private $eagerLoad = [
         'user',
         'establishment',
@@ -25,7 +27,7 @@ class ProductPriceService
      */
     public function __construct()
     {
-        //
+        $this->user_id = Auth::guard('web')->user()?->id;
     }
 
     public function all(array $inputs, Product $product): LengthAwarePaginator
@@ -48,6 +50,21 @@ class ProductPriceService
             ->paginate($perPage, ['*'], 'page');
     }
 
+    public function create(array $inputs, Product $product): ProductPrice
+    {
+        $newPrice = $product
+            ->prices()
+            ->create([...$inputs, 'added_by' => $this->user_id]);
+
+        return $newPrice;
+    }
+
+    public function show(ProductPrice $productPrice): ProductPrice
+    {
+        // eager load connections
+        return $productPrice->load($this->eagerLoad);
+    }
+
     /**
      * Create the existing record or create a new one
      *
@@ -68,7 +85,7 @@ class ProductPriceService
             ],
             [
                 'price' => $data['price'],
-                'added_by' => Auth::guard('web')->user()->id,
+                'added_by' => $this->user_id,
             ],
         );
     }

@@ -54,11 +54,16 @@ trait AssertionTrait
         }
     }
 
-    public function assertShouldBeNotNull(mixed $value)
+    /**
+     * @param mixed $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function assertShouldNotBeNull(mixed $value)
     {
         if (is_null($value)) {
             throw new InvalidArgumentException(
-                'The given value should be not null.',
+                'The given value should not be null.',
             );
         }
     }

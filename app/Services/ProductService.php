@@ -111,7 +111,7 @@ class ProductService
         }
     }
 
-    public function get(Product $product): Product
+    public function show(Product $product): Product
     {
         // eager load connections
         return $product->load([

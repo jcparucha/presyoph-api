@@ -3,6 +3,8 @@
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
+use App\Models\Product;
+use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -52,8 +54,7 @@ Route::prefix('/v1')->group(function () {
 
                 // Product Price Routes
                 Route::controller(ProductPriceController::class)
-                    ->missing(modelNotFound('ProductPrice'))
-                    ->name('price.')
+                    ->name('prices.')
                     ->scopeBindings()
                     ->group(function () {
                         // NOTE: GET should be accessible to GUEST users
@@ -67,18 +68,13 @@ Route::prefix('/v1')->group(function () {
                                     '/products/{product}/prices/{price}',
                                     'show',
                                 )
+                                    ->scopeBindings()
                                     ->whereNumber('product')
                                     ->whereNumber('price')
                                     ->name('show');
                             },
                         );
                         Route::post('/products/{product}/prices', 'store');
-                        Route::patch(
-                            '/products/{product}}/prices/{price}',
-                            'update',
-                        )
-                            ->whereNumber('product')
-                            ->whereNumber('price');
                     });
             });
     });
