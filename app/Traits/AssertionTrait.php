@@ -31,9 +31,9 @@ trait AssertionTrait
             throw new InvalidArgumentException(
                 'The ' .
                     $needle .
-                    ' field is neither ' .
-                    join(' or', $haystack) .
-                    '.',
+                    ' field is not in ' .
+                    join(', ', $haystack) .
+                    '].',
             );
         }
     }
@@ -65,6 +65,20 @@ trait AssertionTrait
             throw new InvalidArgumentException(
                 'The given value should not be null.',
             );
+        }
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param string $className
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function assertShouldClassExists(string $className)
+    {
+        if (!class_exists($className)) {
+            throw new InvalidArgumentException($className . " doesn't exists.");
         }
     }
 }
