@@ -9,7 +9,6 @@ use App\Http\Resources\ProductPriceResource;
 use App\Models\Product;
 use App\Models\ProductPrice;
 use App\Services\ProductPriceService;
-use Illuminate\Http\Request;
 
 class ProductPriceController extends Controller
 {
@@ -53,21 +52,8 @@ class ProductPriceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product, ProductPrice $productPrice)
+    public function show(Product $product, ProductPrice $price)
     {
-        // TODO check later
-        dd($product->id, $productPrice->product_id);
-
-        // can't capture by the Route's missing() method
-        if (is_null($productPrice->product)) {
-            // return error if the product and the price has no relation at all
-            return response()->json(
-                ['error' => 'ProductPrice not found.'],
-                404,
-            );
-        }
-
-        dd($productPrice->product);
-        return $this->productPriceService->show($productPrice)->toResource();
+        return $this->productPriceService->show($price)->toResource();
     }
 }

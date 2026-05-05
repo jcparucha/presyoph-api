@@ -3,8 +3,6 @@
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
-use App\Models\Product;
-use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +67,7 @@ Route::prefix('/v1')->group(function () {
                                     'show',
                                 )
                                     ->scopeBindings()
+                                    ->missing(modelNotFound('productPrice'))
                                     ->whereNumber('product')
                                     ->whereNumber('price')
                                     ->name('show');
