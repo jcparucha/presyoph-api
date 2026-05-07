@@ -2,20 +2,15 @@
 
 namespace App\Http\Requests\Product;
 
-use App\Rules\AlphaCharNumSpace;
-use App\Rules\AlphaSpace;
+use App\Traits\Validations\HasExistsField;
+use App\Traits\Validations\HasNumericField;
+use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
+    use HasExistsField, HasNumericField, HasTextField;
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,36 +20,18 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'sometimes',
-                'required',
-                'min:3',
-                'max:50',
-                new AlphaCharNumSpace(),
-            ],
-            'net_weight' => [
-                'sometimes',
-                'required',
-                'integer:strict',
-                'numeric',
-                'min:1',
-                'max:10000',
-            ],
-            'unit' => ['sometimes', 'required', 'exists:units,abbreviation'],
-            'brand' => [
-                'sometimes',
-                'required',
-                'min:3',
-                'max:50',
-                new AlphaCharNumSpace(),
-            ],
-            'category.name' => [
-                'sometimes',
-                'required',
-                'min:3',
-                'max:50',
-                new AlphaSpace(),
-            ],
+            'name' => $this->nameRule(isRequired: false),
+            'net_weight' => $this->netWeightRule(isRequired: false),
+            'unit' => $this->existsRule(
+                table: 'units',
+                column: 'abbreviation',
+                isRequired: false,
+            ),
+            'brand' => $this->nameRule(isRequired: false),
+            'category.name' => $this->nameRule(
+                isRequired: false,
+                alphaRule: 'AlphaSpace',
+            ),
         ];
     }
 

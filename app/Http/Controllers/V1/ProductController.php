@@ -37,7 +37,7 @@ class ProductController extends Controller
         try {
             $newProduct = $this->productService->create($request->all());
 
-            $this->assertShouldBeNotNull($newProduct);
+            $this->assertShouldNotBeNull($newProduct);
 
             $newResourceLink = route('products.show', [
                 'product' => $newProduct->id,
@@ -62,8 +62,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        // return $this->productService->get($product);
-        return $this->productService->get($product)->toResource();
+        return $this->productService->show($product)->toResource();
     }
 
     /**
@@ -75,12 +74,4 @@ class ProductController extends Controller
             ->update($request->validated(), $product)
             ->toResource();
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(Request $request, Product $product)
-    // {
-    //     return response()->json(['message' => 'Deleted successfully.'], 204);
-    // }
 }

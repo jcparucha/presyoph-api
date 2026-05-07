@@ -100,12 +100,10 @@ class ProductService
 
             return !is_null($product)
                 ? $product->load([
-                    'brand',
-                    'category',
-                    'tags',
-                    'unit',
-                    'user',
-                    'prices',
+                    ...$this->eagerLoad,
+                    'prices' => function ($query) {
+                        $query->latestPerEstablishment();
+                    },
                 ])
                 : null;
         } catch (Exception $error) {
@@ -113,7 +111,7 @@ class ProductService
         }
     }
 
-    public function get(Product $product): Product
+    public function show(Product $product): Product
     {
         // eager load connections
         return $product->load([

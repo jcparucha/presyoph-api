@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProductController;
+use App\Http\Controllers\V1\ProductPriceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,13 +24,6 @@ Route::prefix('/v1')->group(function () {
         Route::post('/logout', 'logout')->middleware('auth:sanctum');
     });
 
-    // ERRORS FOUND WHEN USING IT TOGETHER ELOQUENT RESOURCE
-    //Unresolvable dependency resolving [Parameter #0 [ <required> $resource ]] in class Illuminate\\Http\\Resources\\Json\\JsonResource
-    // Route::middleware(['auth:sanctum'])->apiResource(
-    //     'products',
-    //     ProductResource::class,
-    // );
-
     function modelNotFound(string $model)
     {
         return fn() => response()->json(
@@ -38,23 +32,51 @@ Route::prefix('/v1')->group(function () {
         );
     }
 
-    Route::middleware(['auth:sanctum'])
-        ->controller(ProductController::class)
-        ->missing(modelNotFound('product'))
-        ->name('products.')
-        ->group(function () {
-            // NOTE: GET should be accessible to GUEST users
-            Route::withoutMiddleware(['auth:sanctum'])->group(function () {
-                Route::get('/products', 'index');
-                Route::get('/products/{product}', 'show')
-                    ->whereNumber('product')
-                    ->name('show');
+    Route::middleware(['auth:sanctum'])->group(function () {
+        // Product Routes
+        Route::controller(ProductController::class)
+            ->missing(modelNotFound('Product'))
+            ->name('products.')
+            ->group(function () {
+                // NOTE: GET should be accessible to GUEST users
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    Route::get('/products', 'index');
+                    Route::get('/products/{product}', 'show')
+                        ->whereNumber('product')
+                        ->name('show');
+                });
+                Route::post('/products', 'store');
+                Route::patch('/products/{product}', 'update')->whereNumber(
+                    'product',
+                );
+
+                // Product Price Routes
+                Route::controller(ProductPriceController::class)
+                    ->name('prices.')
+                    ->scopeBindings()
+                    ->group(function () {
+                        // NOTE: GET should be accessible to GUEST users
+                        Route::withoutMiddleware(['auth:sanctum'])->group(
+                            function () {
+                                Route::get(
+                                    '/products/{product}/prices',
+                                    'index',
+                                );
+                                Route::get(
+                                    '/products/{product}/prices/{price}',
+                                    'show',
+                                )
+                                    ->scopeBindings()
+                                    ->missing(modelNotFound('productPrice'))
+                                    ->whereNumber('product')
+                                    ->whereNumber('price')
+                                    ->name('show');
+                            },
+                        );
+                        Route::post('/products/{product}/prices', 'store');
+                    });
             });
-            Route::post('/products', 'store');
-            Route::patch('/products/{product}', 'update')->whereNumber(
-                'product',
-            );
-        });
+    });
 
     Route::fallback(function () {
         return response()->json(['message' => 'are you lost?'], 404);

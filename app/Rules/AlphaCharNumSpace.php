@@ -18,9 +18,10 @@ class AlphaCharNumSpace implements ValidationRule
         mixed $value,
         Closure $fail,
     ): void {
-        if (!preg_match("/^[a-zA-Z0-9'_\- ]+$/", $value)) {
+        // TODO moved to lang/validation
+        if (!preg_match("/^[a-zA-Z0-9.,'_\- ]+$/", $value)) {
             $fail(
-                'The :attribute field must only contain letters, numbers, single qoute, hypen, and underscore.',
+                'The :attribute field must only contain letters, numbers, single qoute, period, comma, hypen, and underscore.',
             );
         }
     }

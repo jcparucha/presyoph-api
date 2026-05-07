@@ -18,8 +18,12 @@ class EstablishmentResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'barangay' => $this->barangay->toResource(),
-            'store_type' => $this->storeType->toResource(),
+            'barangay' => new BarangayResource($this->whenLoaded('barangay')),
+            'store_type' => new StoreTypeResource(
+                $this->whenLoaded('storeType'),
+            ),
+            // 'barangay' => $this->barangay->toResource(),
+            // 'store_type' => $this->storeType->toResource(),
         ];
     }
 }

@@ -17,8 +17,11 @@ class ProductPriceResource extends JsonResource
         return [
             'id' => $this->id,
             'price' => $this->price,
-            'created_at' => $this->created_at,
-            'establishment' => $this->establishment->toResource(),
+            'recorded_at' => $this->created_at,
+            'added_by' => $this->user?->username,
+            'establishment' => new EstablishmentResource(
+                $this->whenLoaded('establishment'),
+            ),
         ];
     }
 }

@@ -2,13 +2,16 @@
 
 namespace App\Http\Requests\Product;
 
-use App\Rules\AlphaCharNumSpace;
-use App\Rules\AlphaSpace;
+use App\Traits\Validations\HasExistsField;
+use App\Traits\Validations\HasNumericField;
+use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class NewProductRequest extends FormRequest
 {
+    use HasExistsField, HasNumericField, HasTextField;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -17,51 +20,27 @@ class NewProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'min:3', 'max:50', new AlphaCharNumSpace()],
-            'net_weight' => [
-                'required',
-                'integer:strict',
-                'numeric',
-                'min:1',
-                'max:10000',
-            ],
-            'unit' => ['required', 'exists:units,abbreviation'],
-            'brand' => ['required', 'min:3', 'max:50', new AlphaCharNumSpace()],
-            'price' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
-            'category.name' => [
-                'required',
-                'min:3',
-                'max:100',
-                new AlphaSpace(),
-            ],
-            'category.description' => [
-                'sometimes',
-                'nullable',
-                'min:3',
-                'max:255',
-                new AlphaCharNumSpace(),
-            ],
+            'name' => $this->nameRule(),
+            'net_weight' => $this->netWeightRule(),
+            'unit' => $this->existsRule(table: 'units', column: 'abbreviation'),
+            'brand' => $this->nameRule(),
+            'price' => $this->priceRule(),
+            'category.name' => $this->nameRule(alphaRule: 'AlphaSpace'),
+            'category.description' => $this->descriptionRule(
+                isRequired: false,
+                isNullable: true,
+            ),
             'tags' => ['sometimes', 'array'],
-            'tags.*' => [
-                'sometimes',
-                'min:3',
-                'max:25',
-                new AlphaCharNumSpace(),
-            ],
-            'establishment.name' => [
-                'required',
-                'min:3',
-                'max:50',
-                new AlphaCharNumSpace(),
-            ],
-            'establishment.barangay_code' => [
-                'required',
-                'exists:barangays,code',
-            ],
-            'establishment.store_type' => [
-                'required',
-                'exists:store_types,name',
-            ],
+            'tags.*' => $this->nameRule(max: 25, isRequired: false),
+            'establishment.name' => $this->nameRule(),
+            'establishment.barangay_code' => $this->existsRule(
+                table: 'barangays',
+                column: 'code',
+            ),
+            'establishment.store_type' => $this->existsRule(
+                table: 'store_types',
+                column: 'name',
+            ),
         ];
     }
 
