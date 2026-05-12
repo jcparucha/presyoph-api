@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Category;
 
-use App\Traits\Validations\HasPagination;
+use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaginationRequest extends FormRequest
+class NewCategoryRequest extends FormRequest
 {
-    use HasPagination;
+    use HasTextField;
 
     /**
      * Get the validation rules that apply to the request.
@@ -17,6 +17,9 @@ class PaginationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->paginationRules();
+        return [
+            'name' => $this->nameRule(alphaRule: 'AlphaSpace'),
+            'description' => $this->descriptionRule(),
+        ];
     }
 }

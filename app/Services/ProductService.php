@@ -40,7 +40,7 @@ class ProductService
         //
     }
 
-    public function all(int $perPage = 20): LengthAwarePaginator
+    public function all(?int $perPage = 20): LengthAwarePaginator
     {
         return Product::with([
             ...$this->eagerLoad,
@@ -208,31 +208,16 @@ class ProductService
      */
     protected function updateProduct(Product $product, array $data): void
     {
-        $this->assertShouldHaveKeys(
-            ['id', 'name', 'net_weight', 'unit_id', 'brand_id', 'category_id'],
-            $data,
-        );
+        $fields = ['name', 'net_weight', 'unit_id', 'brand_id', 'category_id'];
+
+        $this->assertShouldHaveKeys(['id', ...$fields], $data);
 
         $this->assertShouldBeInteger($data['net_weight']);
 
-        if ($product->name !== $data['name']) {
-            $product->name = $data['name'];
-        }
-
-        if ($product->net_weight !== $data['net_weight']) {
-            $product->net_weight = $data['net_weight'];
-        }
-
-        if ($product->unit_id !== $data['unit_id']) {
-            $product->unit_id = $data['unit_id'];
-        }
-
-        if ($product->brand_id !== $data['brand_id']) {
-            $product->brand_id = $data['brand_id'];
-        }
-
-        if ($product->category_id !== $data['category_id']) {
-            $product->category_id = $data['category_id'];
+        foreach ($fields as $field) {
+            if ($product->$field !== $data[$field]) {
+                $product->$field = $data[$field];
+            }
         }
 
         // save if have changes made

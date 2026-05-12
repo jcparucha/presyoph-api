@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Services\ProductService;
 use App\Traits\AssertionTrait;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductController extends Controller
@@ -32,7 +33,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NewProductRequest $request)
+    public function store(NewProductRequest $request): JsonResponse
     {
         try {
             $newProduct = $this->productService->create($request->all());
@@ -60,7 +61,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Product $product): JsonResource
     {
         return $this->productService->show($product)->toResource();
     }
@@ -68,8 +69,10 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
-    {
+    public function update(
+        UpdateProductRequest $request,
+        Product $product,
+    ): JsonResource {
         return $this->productService
             ->update($request->validated(), $product)
             ->toResource();

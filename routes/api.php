@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
 use Illuminate\Http\Request;
@@ -46,9 +47,9 @@ Route::prefix('/v1')->group(function () {
                         ->name('show');
                 });
                 Route::post('/products', 'store');
-                Route::patch('/products/{product}', 'update')->whereNumber(
-                    'product',
-                );
+                Route::patch('/products/{product}', 'update')
+                    ->whereNumber('product')
+                    ->can('update', 'product');
 
                 // Product Price Routes
                 Route::controller(ProductPriceController::class)
@@ -75,6 +76,23 @@ Route::prefix('/v1')->group(function () {
                         );
                         Route::post('/products/{product}/prices', 'store');
                     });
+            });
+
+        // TODO continue the implementation
+        Route::controller(CategoryController::class)
+            ->missing(modelNotFound('Category'))
+            ->name('category.')
+            ->group(function () {
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    Route::get('/categories', 'index');
+                    Route::get('/categories/{category}', 'show')
+                        ->whereNumber('category')
+                        ->name('show');
+                });
+                Route::post('/categories', 'store');
+                Route::patch('/categories/{category}', 'update')
+                    ->whereNumber('category')
+                    ->can('update', 'category');
             });
     });
 
