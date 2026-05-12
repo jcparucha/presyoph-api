@@ -8,7 +8,7 @@ use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class NewProductRequest extends FormRequest
+class StoreProductRequest extends FormRequest
 {
     use HasExistsField, HasNumericField, HasTextField;
 
