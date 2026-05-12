@@ -9,6 +9,8 @@ use App\Http\Resources\ProductPriceResource;
 use App\Models\Product;
 use App\Models\ProductPrice;
 use App\Services\ProductPriceService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductPriceController extends Controller
 {
@@ -19,8 +21,10 @@ class ProductPriceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(PaginationRequest $request, Product $product)
-    {
+    public function index(
+        PaginationRequest $request,
+        Product $product,
+    ): JsonResource {
         return ProductPriceResource::collection(
             $this->productPriceService->all($request->validated(), $product),
         );
@@ -29,8 +33,10 @@ class ProductPriceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NewProductPriceRequest $request, Product $product)
-    {
+    public function store(
+        NewProductPriceRequest $request,
+        Product $product,
+    ): JsonResponse {
         $productPrice = $this->productPriceService->create(
             $request->validated(),
             $product,
@@ -52,7 +58,7 @@ class ProductPriceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product, ProductPrice $price)
+    public function show(Product $product, ProductPrice $price): JsonResource
     {
         return $this->productPriceService->show($price)->toResource();
     }

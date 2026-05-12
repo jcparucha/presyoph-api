@@ -52,11 +52,9 @@ class ProductPriceService
 
     public function create(array $inputs, Product $product): ProductPrice
     {
-        $newPrice = $product
+        return $product
             ->prices()
             ->create([...$inputs, 'added_by' => $this->user_id]);
-
-        return $newPrice;
     }
 
     public function show(ProductPrice $productPrice): ProductPrice

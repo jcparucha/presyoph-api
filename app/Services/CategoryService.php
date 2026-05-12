@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Traits\AssertionTrait;
 use App\Models\Category;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryService
@@ -16,6 +18,41 @@ class CategoryService
     public function __construct()
     {
         //
+    }
+
+    public function all(?int $perPage = 20): LengthAwarePaginator
+    {
+        return Category::with('user')->paginate($perPage, ['*'], 'page');
+    }
+
+    public function show(Category $category): Category
+    {
+        return $category->load('user');
+    }
+
+    public function create(array $data): Category
+    {
+        return $this->firstOrCreate($data);
+    }
+
+    public function update(array $inputs, Category $category)
+    {
+        $fields = ['name', 'description'];
+
+        foreach ($fields as $field) {
+            if (
+                isset($inputs[$field]) &&
+                $category->$field !== $inputs[$field]
+            ) {
+                $category->$field = $inputs[$field];
+            }
+        }
+
+        if ($category->isDirty()) {
+            $category->save();
+        }
+
+        return $category->refresh();
     }
 
     /**
