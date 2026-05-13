@@ -35,7 +35,7 @@ class CategoryService
         return $this->firstOrCreate($data);
     }
 
-    public function update(array $inputs, Category $category)
+    public function update(array $inputs, Category $category): Category
     {
         $fields = ['name', 'description'];
 

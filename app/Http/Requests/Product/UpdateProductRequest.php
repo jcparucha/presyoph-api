@@ -21,7 +21,7 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'name' => $this->nameRule(isRequired: false),
-            'net_weight' => $this->netWeightRule(isRequired: false),
+            'weight' => $this->weightRule(isRequired: false),
             'unit' => $this->existsRule(
                 table: 'units',
                 column: 'abbreviation',

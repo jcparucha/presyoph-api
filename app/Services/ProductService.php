@@ -69,7 +69,7 @@ class ProductService
                 $product = Product::firstOrCreate(
                     [
                         'name' => $data['name'],
-                        'net_weight' => $data['net_weight'],
+                        'weight' => $data['weight'],
                         'unit_id' => $unit->id,
                         'brand_id' => $brand->id,
                     ],
@@ -162,8 +162,7 @@ class ProductService
         return [
             'id' => $product->id,
             'name' => $inputs['name'] ?? $product->name,
-            'net_weight' =>
-                intval($inputs['net_weight']) ?? $product->net_weight,
+            'weight' => intval($inputs['weight']) ?? $product->weight,
             'unit_id' => $unit,
             'brand_id' => $brand,
             'category_id' => $category,
@@ -181,13 +180,13 @@ class ProductService
     protected function validateIfUniqueProduct(array $data): void
     {
         $this->assertShouldHaveKeys(
-            ['id', 'name', 'net_weight', 'unit_id', 'brand_id'],
+            ['id', 'name', 'weight', 'unit_id', 'brand_id'],
             $data,
         );
 
         $product = Product::whereNot('id', $data['id'])
             ->where('name', $data['name'])
-            ->where('net_weight', $data['net_weight'])
+            ->where('weight', $data['weight'])
             ->where('unit_id', $data['unit_id'])
             ->where('brand_id', $data['brand_id'])
             ->first();
@@ -208,11 +207,11 @@ class ProductService
      */
     protected function updateProduct(Product $product, array $data): void
     {
-        $fields = ['name', 'net_weight', 'unit_id', 'brand_id', 'category_id'];
+        $fields = ['name', 'weight', 'unit_id', 'brand_id', 'category_id'];
 
         $this->assertShouldHaveKeys(['id', ...$fields], $data);
 
-        $this->assertShouldBeInteger($data['net_weight']);
+        $this->assertShouldBeInteger($data['weight']);
 
         foreach ($fields as $field) {
             if ($product->$field !== $data[$field]) {

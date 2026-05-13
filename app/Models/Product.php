@@ -16,7 +16,7 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'net_weight',
+        'weight',
         'unit_id',
         'brand_id',
         'category_id',
@@ -68,6 +68,6 @@ class Product extends Model
      */
     protected function casts(): array
     {
-        return ['net_weight' => 'integer'];
+        return ['weight' => 'integer'];
     }
 }

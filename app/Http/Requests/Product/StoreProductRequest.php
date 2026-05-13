@@ -21,7 +21,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => $this->nameRule(),
-            'net_weight' => $this->netWeightRule(),
+            'weight' => $this->weightRule(),
             'unit' => $this->existsRule(table: 'units', column: 'abbreviation'),
             'brand' => $this->nameRule(),
             'price' => $this->priceRule(),
