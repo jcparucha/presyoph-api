@@ -21,7 +21,7 @@ class ProductResource extends JsonResource
             'unit' => $this->unit->toResource(),
             'brand' => $this->brand->toResource(),
             'category' => $this->category->toResource(),
-            'added_by' => $this->user->toResource(),
+            'added_by' => $this->user?->username,
             'tags' => TagResource::collection($this->tags),
             'latest_price' => ProductPriceResource::collection($this->prices),
         ];

@@ -2,23 +2,27 @@
 
 namespace App\Policies;
 
-use App\Models\Product;
+use App\Models\Establishment;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class ProductPolicy
+class EstablishmentPolicy
 {
     /**
      * Create a new policy instance.
      */
-    public function __construct() {}
+    public function __construct()
+    {
+        //
+    }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Product $product): Response
+    public function update(User $user, Establishment $establishment): Response
     {
-        return $user->id === $product->added_by && !is_null($product->added_by)
+        return $user->id === $establishment->added_by &&
+            !is_null($establishment->added_by)
             ? Response::allow()
             : Response::denyAsNotFound();
     }

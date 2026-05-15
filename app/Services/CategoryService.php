@@ -5,12 +5,13 @@ namespace App\Services;
 use App\Traits\AssertionTrait;
 use App\Models\Category;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryService
 {
     use AssertionTrait;
+
+    private $fields = ['name', 'description'];
 
     /**
      * Create a new class instance.
@@ -37,9 +38,7 @@ class CategoryService
 
     public function update(array $inputs, Category $category): Category
     {
-        $fields = ['name', 'description'];
-
-        foreach ($fields as $field) {
+        foreach ($this->fields as $field) {
             if (
                 isset($inputs[$field]) &&
                 $category->$field !== $inputs[$field]
@@ -63,7 +62,7 @@ class CategoryService
      */
     public function firstOrCreate(array $data): Category
     {
-        $this->assertShouldHaveKeys(['name', 'description'], $data);
+        $this->assertShouldHaveKeys($this->fields, $data);
 
         return Category::firstOrCreate(
             ['name' => $data['name']],

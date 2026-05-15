@@ -15,14 +15,14 @@ class ProductService
 {
     use AssertionTrait;
 
+    private $fields = ['name', 'weight', 'unit_id', 'brand_id'];
+
     private $eagerLoad = [
         'brand',
         'category',
         'tags',
         'unit',
         'user',
-        'prices',
-        'prices.establishment',
         'prices.establishment.barangay',
         'prices.establishment.storeType',
     ];
@@ -79,7 +79,6 @@ class ProductService
                     ],
                 );
 
-                // TODO add validation that the brgy_id is belonged to mun_city_id, and mun_city_id to province_id, and to region_id
                 $establishment = $this->establishmentService->firstOrCreate(
                     $data['establishment'],
                 );
@@ -179,10 +178,7 @@ class ProductService
      */
     protected function validateIfUniqueProduct(array $data): void
     {
-        $this->assertShouldHaveKeys(
-            ['id', 'name', 'weight', 'unit_id', 'brand_id'],
-            $data,
-        );
+        $this->assertShouldHaveKeys(['id', ...$this->fields], $data);
 
         $product = Product::whereNot('id', $data['id'])
             ->where('name', $data['name'])
@@ -207,9 +203,9 @@ class ProductService
      */
     protected function updateProduct(Product $product, array $data): void
     {
-        $fields = ['name', 'weight', 'unit_id', 'brand_id', 'category_id'];
+        $fields = ['id', 'category_id', ...$this->fields];
 
-        $this->assertShouldHaveKeys(['id', ...$fields], $data);
+        $this->assertShouldHaveKeys($fields, $data);
 
         $this->assertShouldBeInteger($data['weight']);
 
