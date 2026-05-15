@@ -40,9 +40,7 @@ class CategoryPolicy
         return $user->id === $category->added_by &&
             !is_null($category->added_by)
             ? Response::allow()
-            : Response::denyAsNotFound(
-                'You are not authorized to do this action.',
-            );
+            : Response::denyAsNotFound();
     }
 
     /**

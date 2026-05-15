@@ -15,14 +15,14 @@ class ProductService
 {
     use AssertionTrait;
 
+    private $fields = ['name', 'weight', 'unit_id', 'brand_id'];
+
     private $eagerLoad = [
         'brand',
         'category',
         'tags',
         'unit',
         'user',
-        'prices',
-        'prices.establishment',
         'prices.establishment.barangay',
         'prices.establishment.storeType',
     ];
@@ -69,7 +69,7 @@ class ProductService
                 $product = Product::firstOrCreate(
                     [
                         'name' => $data['name'],
-                        'net_weight' => $data['net_weight'],
+                        'weight' => $data['weight'],
                         'unit_id' => $unit->id,
                         'brand_id' => $brand->id,
                     ],
@@ -79,7 +79,6 @@ class ProductService
                     ],
                 );
 
-                // TODO add validation that the brgy_id is belonged to mun_city_id, and mun_city_id to province_id, and to region_id
                 $establishment = $this->establishmentService->firstOrCreate(
                     $data['establishment'],
                 );
@@ -162,8 +161,7 @@ class ProductService
         return [
             'id' => $product->id,
             'name' => $inputs['name'] ?? $product->name,
-            'net_weight' =>
-                intval($inputs['net_weight']) ?? $product->net_weight,
+            'weight' => intval($inputs['weight']) ?? $product->weight,
             'unit_id' => $unit,
             'brand_id' => $brand,
             'category_id' => $category,
@@ -180,14 +178,11 @@ class ProductService
      */
     protected function validateIfUniqueProduct(array $data): void
     {
-        $this->assertShouldHaveKeys(
-            ['id', 'name', 'net_weight', 'unit_id', 'brand_id'],
-            $data,
-        );
+        $this->assertShouldHaveKeys(['id', ...$this->fields], $data);
 
         $product = Product::whereNot('id', $data['id'])
             ->where('name', $data['name'])
-            ->where('net_weight', $data['net_weight'])
+            ->where('weight', $data['weight'])
             ->where('unit_id', $data['unit_id'])
             ->where('brand_id', $data['brand_id'])
             ->first();
@@ -208,11 +203,11 @@ class ProductService
      */
     protected function updateProduct(Product $product, array $data): void
     {
-        $fields = ['name', 'net_weight', 'unit_id', 'brand_id', 'category_id'];
+        $fields = ['id', 'category_id', ...$this->fields];
 
-        $this->assertShouldHaveKeys(['id', ...$fields], $data);
+        $this->assertShouldHaveKeys($fields, $data);
 
-        $this->assertShouldBeInteger($data['net_weight']);
+        $this->assertShouldBeInteger($data['weight']);
 
         foreach ($fields as $field) {
             if ($product->$field !== $data[$field]) {

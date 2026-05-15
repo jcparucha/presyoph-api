@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductPrice\NewProductPriceRequest;
+use App\Http\Requests\ProductPrice\StoreProductPriceRequest;
 use App\Http\Requests\ProductPrice\PaginationRequest;
 use App\Http\Resources\ProductPriceResource;
 use App\Models\Product;
@@ -34,7 +34,7 @@ class ProductPriceController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(
-        NewProductPriceRequest $request,
+        StoreProductPriceRequest $request,
         Product $product,
     ): JsonResponse {
         $productPrice = $this->productPriceService->create(

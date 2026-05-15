@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\CategoryController;
+use App\Http\Controllers\V1\EstablishmentController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
 use Illuminate\Http\Request;
@@ -78,7 +79,6 @@ Route::prefix('/v1')->group(function () {
                     });
             });
 
-        // TODO continue the implementation
         Route::controller(CategoryController::class)
             ->missing(modelNotFound('Category'))
             ->name('category.')
@@ -93,6 +93,22 @@ Route::prefix('/v1')->group(function () {
                 Route::patch('/categories/{category}', 'update')
                     ->whereNumber('category')
                     ->can('update', 'category');
+            });
+
+        Route::controller(EstablishmentController::class)
+            ->missing(modelNotFound('Establishment'))
+            ->name('establishment.')
+            ->group(function () {
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    Route::get('/establishments', 'index');
+                    Route::get('/establishments/{establishment}', 'show')
+                        ->whereNumber('establishment')
+                        ->name('show');
+                });
+                Route::post('/establishments', 'store');
+                Route::patch('/establishments/{establishment}', 'update')
+                    ->whereNumber('establishment')
+                    ->can('update', 'establishment');
             });
     });
 

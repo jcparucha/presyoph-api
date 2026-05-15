@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\NewCategoryRequest;
+use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\CategoryResource;
@@ -29,7 +29,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NewCategoryRequest $request)
+    public function store(StoreCategoryRequest $request)
     {
         $newCategory = $this->categoryService->create($request->validated());
 

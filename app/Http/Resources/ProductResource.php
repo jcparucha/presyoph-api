@@ -17,11 +17,11 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'net_weight' => $this->net_weight,
+            'weight' => $this->weight,
             'unit' => $this->unit->toResource(),
             'brand' => $this->brand->toResource(),
             'category' => $this->category->toResource(),
-            'added_by' => $this->user->toResource(),
+            'added_by' => $this->user?->username,
             'tags' => TagResource::collection($this->tags),
             'latest_price' => ProductPriceResource::collection($this->prices),
         ];

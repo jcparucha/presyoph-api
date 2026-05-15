@@ -17,7 +17,6 @@ class ProductPriceService
 
     private $eagerLoad = [
         'user',
-        'establishment',
         'establishment.barangay',
         'establishment.storeType',
     ];
@@ -34,16 +33,14 @@ class ProductPriceService
     {
         $product->load('prices');
 
-        $perPage = isset($inputs['per_page']) ? $inputs['per_page'] : 20;
+        $perPage = $inputs['per_page'] ?? 20;
 
-        $id = isset($inputs['establishment_id'])
-            ? $inputs['establishment_id']
-            : null;
+        $id = $inputs['establishment_id'] ?? null;
 
         return $product
             ->prices()
             ->with($this->eagerLoad)
-            ->when($id, function (Builder $query) use ($id) {
+            ->when($id, function (Builder $query, int $id) {
                 $query->establishment($id);
             })
             ->orderByDesc('created_at')

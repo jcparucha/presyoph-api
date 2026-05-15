@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaginationRequest;
-use App\Http\Requests\Product\NewProductRequest;
+use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -33,7 +33,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NewProductRequest $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
         try {
             $newProduct = $this->productService->create($request->all());

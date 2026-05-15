@@ -14,16 +14,25 @@ class EstablishmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // TODO add mun/city, province, and region
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'barangay' => new BarangayResource($this->whenLoaded('barangay')),
             'store_type' => new StoreTypeResource(
                 $this->whenLoaded('storeType'),
             ),
-            // 'barangay' => $this->barangay->toResource(),
-            // 'store_type' => $this->storeType->toResource(),
+            'address' => $this->whenLoaded('barangay', function () {
+                $barangay = $this->barangay;
+                $munCity = $barangay?->munCity;
+                $province = $munCity?->province;
+                $region = $province?->region;
+
+                return [
+                    'barangay' => $barangay?->name,
+                    'munCity' => $munCity?->name,
+                    'province' => $province?->name,
+                    'region' => $region?->name,
+                ];
+            }),
         ];
     }
 }

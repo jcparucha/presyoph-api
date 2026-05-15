@@ -7,7 +7,7 @@ use App\Traits\Validations\HasNumericField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class NewProductPriceRequest extends FormRequest
+class StoreProductPriceRequest extends FormRequest
 {
     use HasExistsField, HasNumericField;
 
