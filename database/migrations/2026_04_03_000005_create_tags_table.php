@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->id();
             $table->string("name", length: 100)->fulltext();
+            $table->string("slug", length: 100)->nullable()->unique();
             $table->foreignIdFor(User::class, "added_by")->nullable();
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
