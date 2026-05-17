@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Traits\Validations\HasArrayField;
 use App\Traits\Validations\HasExistsField;
 use App\Traits\Validations\HasNumericField;
 use App\Traits\Validations\HasTextField;
@@ -10,7 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
 {
-    use HasExistsField, HasNumericField, HasTextField;
+    use HasArrayField, HasExistsField, HasNumericField, HasTextField;
 
     /**
      * Get the validation rules that apply to the request.
@@ -30,8 +31,8 @@ class StoreProductRequest extends FormRequest
                 isRequired: false,
                 isNullable: true,
             ),
-            'tags' => ['sometimes', 'array'],
-            'tags.*' => $this->nameRule(max: 25, isRequired: false),
+            'tags' => $this->arrayRule(isRequired: false),
+            'tags.*' => $this->textItemRule(max: 25, alphaRule: 'AlphaSpace'),
             'establishment.name' => $this->nameRule(),
             'establishment.barangay_code' => $this->existsRule(
                 table: 'barangays',

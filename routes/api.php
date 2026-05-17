@@ -5,6 +5,7 @@ use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\EstablishmentController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
+use App\Http\Controllers\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,14 +44,13 @@ Route::prefix('/v1')->group(function () {
                 // NOTE: GET should be accessible to GUEST users
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/products', 'index');
-                    Route::get('/products/{product}', 'show')
-                        ->whereNumber('product')
-                        ->name('show');
+                    Route::get('/products/{product}', 'show')->name('show');
                 });
                 Route::post('/products', 'store');
-                Route::patch('/products/{product}', 'update')
-                    ->whereNumber('product')
-                    ->can('update', 'product');
+                Route::patch('/products/{product}', 'update')->can(
+                    'update',
+                    'product',
+                );
 
                 // Product Price Routes
                 Route::controller(ProductPriceController::class)
@@ -70,12 +70,27 @@ Route::prefix('/v1')->group(function () {
                                 )
                                     ->scopeBindings()
                                     ->missing(modelNotFound('productPrice'))
-                                    ->whereNumber('product')
-                                    ->whereNumber('price')
                                     ->name('show');
                             },
                         );
                         Route::post('/products/{product}/prices', 'store');
+                    });
+
+                // Product Tags
+                Route::controller(TagController::class)
+                    ->name('tags.')
+                    ->scopeBindings()
+                    ->group(function () {
+                        // NOTE: GET should be accessible to GUEST users
+                        Route::withoutMiddleware(['auth:sanctum'])->group(
+                            function () {
+                                Route::get('/products/{product}/tags', 'index');
+                            },
+                        );
+                        Route::put('/products/{product}/tags', 'update')->can(
+                            'update',
+                            'product',
+                        );
                     });
             });
 
@@ -85,14 +100,13 @@ Route::prefix('/v1')->group(function () {
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/categories', 'index');
-                    Route::get('/categories/{category}', 'show')
-                        ->whereNumber('category')
-                        ->name('show');
+                    Route::get('/categories/{category}', 'show')->name('show');
                 });
                 Route::post('/categories', 'store');
-                Route::patch('/categories/{category}', 'update')
-                    ->whereNumber('category')
-                    ->can('update', 'category');
+                Route::patch('/categories/{category}', 'update')->can(
+                    'update',
+                    'category',
+                );
             });
 
         Route::controller(EstablishmentController::class)
@@ -101,14 +115,15 @@ Route::prefix('/v1')->group(function () {
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/establishments', 'index');
-                    Route::get('/establishments/{establishment}', 'show')
-                        ->whereNumber('establishment')
-                        ->name('show');
+                    Route::get('/establishments/{establishment}', 'show')->name(
+                        'show',
+                    );
                 });
                 Route::post('/establishments', 'store');
-                Route::patch('/establishments/{establishment}', 'update')
-                    ->whereNumber('establishment')
-                    ->can('update', 'establishment');
+                Route::patch('/establishments/{establishment}', 'update')->can(
+                    'update',
+                    'establishment',
+                );
             });
     });
 

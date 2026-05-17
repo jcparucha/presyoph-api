@@ -93,7 +93,7 @@ class ProductService
 
                 // only create product tags if it's a new product, else use POST product/{product}/tags to update tags
                 if ($product->wasRecentlyCreated) {
-                    $this->syncTags($product, $data['tags']);
+                    $this->tagService->syncTags($product, $data['tags']);
                 }
             });
 
@@ -218,23 +218,6 @@ class ProductService
         // save if have changes made
         if ($product->isDirty()) {
             $product->save();
-        }
-    }
-
-    /**
-     * @param Product $product
-     * @param array $tags
-     * @return void
-     */
-    protected function syncTags(Product $product, array $tags): void
-    {
-        $newTags = $this->tagService->getNewTags($tags);
-
-        // only sync tags if have new tags
-        if (count($newTags)) {
-            $product->tags()->syncWithPivotValuesOrFail($newTags, [
-                'created_at' => now(),
-            ]);
         }
     }
 }
