@@ -44,6 +44,11 @@ class CategoryService
                 $category->$field !== $inputs[$field]
             ) {
                 $category->$field = $inputs[$field];
+
+                // update slug if name was changed
+                if ($field === 'name') {
+                    $category->slug = generate_unique_slug('name');
+                }
             }
         }
 
@@ -67,6 +72,7 @@ class CategoryService
         return Category::firstOrCreate(
             ['name' => $data['name']],
             [
+                'slug' => generate_unique_slug($data['name']),
                 'description' => $data['description'] ?? null,
                 'added_by' => Auth::guard('web')->user()->id,
             ],
