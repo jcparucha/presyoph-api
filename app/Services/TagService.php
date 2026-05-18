@@ -137,7 +137,7 @@ class TagService
             ->transform(function (string $newTag) {
                 return [
                     'name' => $newTag,
-                    'slug' => Str::slug(Str::lower($newTag), '-'),
+                    'slug' => generate_unique_slug($newTag),
                     'added_by' => Auth::guard('web')->user()->id,
                     'created_at' => now(),
                 ];

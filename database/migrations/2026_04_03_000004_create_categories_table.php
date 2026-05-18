@@ -16,13 +16,15 @@ return new class extends Migration {
             $table->collation('utf8mb4_unicode_ci');
 
             $table->id();
-            $table->string('name', length: 100)->fulltext();
+            $table->string('name', length: 100);
+            $table->string('slug', length: 100)->nullable();
             $table->string('description', length: 255)->nullable();
             $table->foreignIdFor(User::class, 'added_by')->nullable();
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
             $table->index(['added_by']);
+            $table->unique(['name', 'slug']);
         });
     }
 

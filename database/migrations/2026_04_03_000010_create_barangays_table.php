@@ -21,8 +21,6 @@ return new class extends Migration {
             $table
                 ->foreignIdFor(MunCity::class, 'mun_city_code')
                 ->constrained();
-            $table->char('province_code', length: 10)->nullable();
-            $table->char('region_code', length: 10)->nullable();
 
             $table->index('mun_city_code');
             $table->primary('code');

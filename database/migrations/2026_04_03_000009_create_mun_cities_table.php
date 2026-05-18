@@ -22,8 +22,6 @@ return new class extends Migration {
                 ->foreignIdFor(Province::class, 'province_code')
                 ->nullable()
                 ->constrained();
-            $table->char('district_code', length: 10)->nullable();
-            $table->char('city_class', length: 10)->nullable();
 
             $table->index('province_code');
             $table->primary('code');
