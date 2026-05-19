@@ -11,7 +11,7 @@ class Category extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'description', 'added_by'];
+    protected $fillable = ['name', 'slug', 'description', 'added_by'];
 
     public function products(): HasMany
     {

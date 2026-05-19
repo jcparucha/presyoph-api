@@ -158,10 +158,16 @@ class ProductService
             ])->id
             : $product->category_id;
 
+        $name = $inputs['name'] ?? $product->name;
+
+        $weight = isset($inputs['weight'])
+            ? intval($inputs['weight'])
+            : $product->weight;
+
         return [
             'id' => $product->id,
-            'name' => $inputs['name'] ?? $product->name,
-            'weight' => intval($inputs['weight']) ?? $product->weight,
+            'name' => $name,
+            'weight' => $weight,
             'unit_id' => $unit,
             'brand_id' => $brand,
             'category_id' => $category,

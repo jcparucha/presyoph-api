@@ -11,7 +11,7 @@ class Tag extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug'];
 
     public function products(): BelongsToMany
     {
