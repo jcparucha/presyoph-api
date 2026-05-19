@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\BrandController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\EstablishmentController;
 use App\Http\Controllers\V1\ProductController;
@@ -8,6 +9,16 @@ use App\Http\Controllers\V1\ProductPriceController;
 use App\Http\Controllers\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+if (!function_exists('modelNotFound')) {
+    function modelNotFound(string $model)
+    {
+        return fn() => response()->json(
+            ['error' => ucfirst($model) . ' not found.'],
+            404,
+        );
+    }
+}
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'pong']);
@@ -26,14 +37,6 @@ Route::prefix('/v1')->group(function () {
         Route::post('/login', 'login')->name('login');
         Route::post('/logout', 'logout')->middleware('auth:sanctum');
     });
-
-    function modelNotFound(string $model)
-    {
-        return fn() => response()->json(
-            ['error' => ucfirst($model) . ' not found.'],
-            404,
-        );
-    }
 
     Route::middleware(['auth:sanctum'])->group(function () {
         // Product Routes
@@ -92,6 +95,21 @@ Route::prefix('/v1')->group(function () {
                             'product',
                         );
                     });
+            });
+
+        Route::controller(BrandController::class)
+            ->missing(modelNotFound('Brand'))
+            ->name('brand.')
+            ->group(function () {
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    Route::get('/brands', 'index');
+                    Route::get('/brands/{brand}', 'show')->name('show');
+                });
+                Route::post('/brands', 'store');
+                Route::patch('/brands/{brand}', 'update')->can(
+                    'update',
+                    'brand',
+                );
             });
 
         Route::controller(CategoryController::class)

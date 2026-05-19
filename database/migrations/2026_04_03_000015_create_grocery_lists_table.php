@@ -17,12 +17,15 @@ return new class extends Migration {
 
             $table->id();
             $table->foreignIdFor(User::class, 'created_by')->constrained();
-            $table->string('name', length: 255)->fulltext();
+            $table->string('name', length: 255);
+            $table->string('slug', length: 255)->unique();
+            $table->text('description')->nullable();
             $table->boolean('is_public')->default(0);
             $table->timestamps(precision: 3);
             $table->softDeletes('deleted_at', precision: 3);
 
             $table->index(['created_by']);
+            $table->fullText(['name', 'description']);
         });
     }
 

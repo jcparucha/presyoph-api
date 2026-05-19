@@ -28,6 +28,7 @@ return new class extends Migration {
             $table->softdeletes('deleted_at', precision: 3);
 
             $table->index(['barangay_code', 'store_type_id', 'added_by']);
+            $table->unique(['name', 'barangay_code']);
         });
     }
 

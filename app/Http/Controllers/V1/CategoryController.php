@@ -9,6 +9,7 @@ use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\CategoryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,7 +30,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
         $newCategory = $this->categoryService->create($request->validated());
 
@@ -56,8 +57,10 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
-    {
+    public function update(
+        UpdateCategoryRequest $request,
+        Category $category,
+    ): JsonResource {
         return $this->categoryService
             ->update($request->validated(), $category)
             ->toResource();
