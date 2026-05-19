@@ -7,7 +7,6 @@ use App\Models\Tag;
 use App\Traits\AssertionTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class TagService
 {
@@ -30,17 +29,13 @@ class TagService
      * Resync the product tags
      *
      * Detach product tags if there's no payload or empty { tags: [] }
-     *
-     * @param array $data
-     * @param Product $product
-     * @return Collection
      */
     public function update(array $data, Product $product): Collection
     {
         $tags = $data['tags'] ?? [];
 
         // skip syncing tags if no input tags or the product has no tags
-        if (!empty($tags) || $product->tags->isNotEmpty()) {
+        if (! empty($tags) || $product->tags->isNotEmpty()) {
             $this->syncTags($product, $tags);
 
             // refresh to rehydrate the data
@@ -50,11 +45,6 @@ class TagService
         return $product->tags;
     }
 
-    /**
-     * @param Product $product
-     * @param array $tags
-     * @return void
-     */
     public function syncTags(Product $product, array $tags): void
     {
         $newTags = $this->getNewTags($tags);
@@ -74,9 +64,6 @@ class TagService
 
     /**
      * Save new tags in the DB and return the IDs of the given tags
-     *
-     * @param array $tags
-     * @return array
      */
     private function getNewTags(array $tags = []): array
     {
@@ -100,9 +87,7 @@ class TagService
     /**
      * Get all the existing tags in the DB based from the given array of tags
      *
-     * @param array $tags
-     * @param array $field = choose the returned collection values; either tag 'id' or 'name'
-     * @return Collection
+     * @param  array  $field  = choose the returned collection values; either tag 'id' or 'name'
      */
     private function getExistingTags(
         array $tags,
@@ -112,14 +97,11 @@ class TagService
 
         return Tag::whereIn('name', $tags)
             ->get()
-            ->map(fn(Tag $tag) => $tag[$field]);
+            ->map(fn (Tag $tag) => $tag[$field]);
     }
 
     /**
      * Get the tags that are not saved in the DB based from the given array of tags
-     *
-     * @param array $tags
-     * @return Collection
      */
     private function getNonExistingTags(array $tags): Collection
     {
@@ -147,10 +129,6 @@ class TagService
 
     /**
      * Save non-existing tags and return their tag IDs
-     *
-     * @param array $nonExistingTags
-     * @param array $tags
-     * @return array
      */
     private function saveNonExistingTags(
         array $nonExistingTags,
@@ -162,7 +140,7 @@ class TagService
         // get all tag ids.
         return Tag::whereIn('name', $tags)
             ->get()
-            ->map(fn(Tag $tag) => $tag->id)
+            ->map(fn (Tag $tag) => $tag->id)
             ->all();
     }
 }

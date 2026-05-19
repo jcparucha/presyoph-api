@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PaginationRequest extends FormRequest
 {
-    use HasPagination, HasExistsField;
+    use HasExistsField, HasPagination;
 
     /**
      * Get the validation rules that apply to the request.

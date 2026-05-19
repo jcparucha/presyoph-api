@@ -10,15 +10,12 @@ trait HasArrayField
 
     public function arrayRule(int $max = 5, bool $isRequired = true): array
     {
-        return [$isRequired ? 'required' : 'sometimes', 'array', 'max:' . $max];
+        return [$isRequired ? 'required' : 'sometimes', 'array', 'max:'.$max];
     }
 
     /**
-     * @param integer $max
-     * @param boolean $isDistinct
-     * @param boolean $isRequired
-     * @param string $alphaRule = 'AlphaSpace', 'AlphaNumSpace', 'AlphaCharNumSpace'
-     * @return array
+     * @param  bool  $isDistinct
+     * @param  string  $alphaRule  = 'AlphaSpace', 'AlphaNumSpace', 'AlphaCharNumSpace'
      */
     public function textItemRule(
         int $max = 25,

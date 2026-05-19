@@ -18,7 +18,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): Response
     {
-        return $user->id === $product->added_by && !is_null($product->added_by)
+        return $user->id === $product->added_by && ! is_null($product->added_by)
             ? Response::allow()
             : Response::denyAsNotFound();
     }

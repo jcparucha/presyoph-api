@@ -18,8 +18,8 @@ trait HasNumericField
             $isRequired ? 'required' : 'sometimes',
             'integer:strict',
             'numeric',
-            'min:' . $min,
-            'max:' . $max,
+            'min:'.$min,
+            'max:'.$max,
         ];
     }
 }

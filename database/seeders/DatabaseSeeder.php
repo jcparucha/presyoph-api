@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             StoreTypeSeeder::class,
             TagSeeder::class,
-            UnitSeeder::class
+            UnitSeeder::class,
         ]);
     }
 }

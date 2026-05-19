@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Traits\AssertionTrait;
 use App\Models\Establishment;
 use App\Models\StoreType;
+use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,7 +74,7 @@ class EstablishmentService
         foreach ($this->fields as $field) {
             if (
                 isset($inputs[$field]) &&
-                $establishment->$field !== $inputs[$field]
+                $inputs[$field] !== $establishment->$field
             ) {
                 $establishment->$field = $inputs[$field];
             }
@@ -89,9 +89,6 @@ class EstablishmentService
 
     /**
      * Create the existing record or create a new one
-     *
-     * @param array $data
-     * @return Establishment
      */
     public function firstOrCreate(array $data): Establishment
     {

@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('units', function (Blueprint $table) {
-            $table->charset("utf8mb4");
-            $table->collation("utf8mb4_unicode_ci");
+            $table->charset('utf8mb4');
+            $table->collation('utf8mb4_unicode_ci');
 
             $table->id();
-            $table->string("name", length: 20);
-            $table->string("abbreviation", length: 15);
+            $table->string('name', length: 20);
+            $table->string('abbreviation', length: 15);
         });
     }
 

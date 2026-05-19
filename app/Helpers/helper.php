@@ -2,16 +2,14 @@
 
 use Illuminate\Support\Str;
 
-if (!function_exists('generate_unique_slug')) {
+if (! function_exists('generate_unique_slug')) {
     /**
      * Generate slug value
      *
-     * @param string $value
-     * @param integer $entropy the number of random character
-     * @return string
+     * @param  int  $entropy  the number of random character
      */
     function generate_unique_slug(string $value, int $entropy = 8): string
     {
-        return Str::slug(Str::lower($value)) . '-' . Str::random($entropy);
+        return Str::slug(Str::lower($value)).'-'.Str::random($entropy);
     }
 }

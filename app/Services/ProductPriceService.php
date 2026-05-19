@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Product;
-use App\Traits\AssertionTrait;
 use App\Models\ProductPrice;
+use App\Traits\AssertionTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -62,9 +62,6 @@ class ProductPriceService
 
     /**
      * Create the existing record or create a new one
-     *
-     * @param array $data
-     * @return ProductPrice
      */
     public function firstOrCreate(array $data): ProductPrice
     {

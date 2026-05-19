@@ -18,7 +18,7 @@ class AlphaNumSpace implements ValidationRule
         mixed $value,
         Closure $fail,
     ): void {
-        if (!preg_match('/^[a-zA-Z0-9 ]+$/', $value)) {
+        if (! preg_match('/^[a-zA-Z0-9 ]+$/', $value)) {
             $fail(
                 'The :attribute field must only contain letters and numbers.',
             );

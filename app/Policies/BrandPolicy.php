@@ -21,7 +21,7 @@ class BrandPolicy
      */
     public function update(User $user, Brand $brand): Response
     {
-        return $user->id === $brand->added_by && !is_null($brand->added_by)
+        return $user->id === $brand->added_by && ! is_null($brand->added_by)
             ? Response::allow()
             : Response::denyAsNotFound();
     }

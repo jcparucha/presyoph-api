@@ -10,11 +10,11 @@ use App\Http\Controllers\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-if (!function_exists('modelNotFound')) {
+if (! function_exists('modelNotFound')) {
     function modelNotFound(string $model)
     {
-        return fn() => response()->json(
-            ['error' => ucfirst($model) . ' not found.'],
+        return fn () => response()->json(
+            ['error' => ucfirst($model).' not found.'],
             404,
         );
     }

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Traits\AssertionTrait;
 use App\Models\Product;
 use App\Models\Unit;
+use App\Traits\AssertionTrait;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -97,7 +97,7 @@ class ProductService
                 }
             });
 
-            return !is_null($product)
+            return ! is_null($product)
                 ? $product->load([
                     ...$this->eagerLoad,
                     'prices' => function ($query) {
@@ -133,10 +133,7 @@ class ProductService
         return $product->refresh();
     }
 
-    public function delete(string $id): void
-    {
-        return;
-    }
+    public function delete(string $id): void {}
 
     protected function generateProductData(
         Product $product,
@@ -178,9 +175,6 @@ class ProductService
      * Check if the changes being made in the product is already exists
      *
      * A product should be unique by its Brand, Name, Net Weight, and Unit
-     *
-     * @param array $data
-     * @return void
      */
     protected function validateIfUniqueProduct(array $data): void
     {
@@ -193,7 +187,7 @@ class ProductService
             ->where('brand_id', $data['brand_id'])
             ->first();
 
-        if (!is_null($product)) {
+        if (! is_null($product)) {
             throw ValidationException::withMessages([
                 'product' => __('validation.unique', [
                     'attribute' => 'product',
@@ -202,11 +196,6 @@ class ProductService
         }
     }
 
-    /**
-     * @param Product $product
-     * @param array $data
-     * @return void
-     */
     protected function updateProduct(Product $product, array $data): void
     {
         $fields = ['id', 'category_id', ...$this->fields];
@@ -216,7 +205,7 @@ class ProductService
         $this->assertShouldBeInteger($data['weight']);
 
         foreach ($fields as $field) {
-            if ($product->$field !== $data[$field]) {
+            if ($data[$field] !== $product->$field) {
                 $product->$field = $data[$field];
             }
         }

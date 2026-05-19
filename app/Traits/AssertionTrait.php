@@ -9,9 +9,8 @@ trait AssertionTrait
     /**
      * Check the array if it has the required keys.
      *
-     * @param array $requiredKeys
-     * @param array $array
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function assertShouldHaveKeys(array $requiredKeys, array $array)
@@ -20,19 +19,19 @@ trait AssertionTrait
 
         if (count($missingFields)) {
             throw new InvalidArgumentException(
-                'Missing required keys: ' . join(', ', $missingFields),
+                'Missing required keys: '.implode(', ', $missingFields),
             );
         }
     }
 
     public function assertShouldBeInArray(array $haystack, mixed $needle)
     {
-        if (!in_array($needle, $haystack)) {
+        if (! in_array($needle, $haystack)) {
             throw new InvalidArgumentException(
-                'The ' .
-                    $needle .
-                    ' field is not in ' .
-                    join(', ', $haystack) .
+                'The '.
+                    $needle.
+                    ' field is not in '.
+                    implode(', ', $haystack).
                     '].',
             );
         }
@@ -41,13 +40,13 @@ trait AssertionTrait
     /**
      * Check if the given value is integer.
      *
-     * @param mixed $value
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function assertShouldBeInteger(mixed $value)
     {
-        if (!is_int($value)) {
+        if (! is_int($value)) {
             throw new InvalidArgumentException(
                 'The given value should be an integer.',
             );
@@ -55,8 +54,8 @@ trait AssertionTrait
     }
 
     /**
-     * @param mixed $value
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function assertShouldNotBeNull(mixed $value)
@@ -71,14 +70,14 @@ trait AssertionTrait
     /**
      * Undocumented function
      *
-     * @param string $className
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function assertShouldClassExists(string $className)
     {
-        if (!class_exists($className)) {
-            throw new InvalidArgumentException($className . " doesn't exists.");
+        if (! class_exists($className)) {
+            throw new InvalidArgumentException($className." doesn't exists.");
         }
     }
 }

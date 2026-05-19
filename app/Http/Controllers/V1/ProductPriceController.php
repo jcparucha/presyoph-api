@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductPrice\StoreProductPriceRequest;
 use App\Http\Requests\ProductPrice\PaginationRequest;
+use App\Http\Requests\ProductPrice\StoreProductPriceRequest;
 use App\Http\Resources\ProductPriceResource;
 use App\Models\Product;
 use App\Models\ProductPrice;
