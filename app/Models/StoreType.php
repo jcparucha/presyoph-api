@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StoreType extends Model
 {
+    use HasFactory;
+
+    public $timestamps = false;
+
+    protected $fillable = ['name', 'slug'];
+
     public function scopeOfType(Builder $query, string $type): void
     {
         $query->where('name', $type);

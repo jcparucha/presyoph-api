@@ -6,6 +6,7 @@ use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\EstablishmentController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
+use App\Http\Controllers\V1\StoreTypeController;
 use App\Http\Controllers\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,10 +14,7 @@ use Illuminate\Support\Facades\Route;
 if (! function_exists('modelNotFound')) {
     function modelNotFound(string $model)
     {
-        return fn () => response()->json(
-            ['error' => ucfirst($model).' not found.'],
-            404,
-        );
+        return fn () => response()->json(['error' => ucfirst($model).' not found.'], 404);
     }
 }
 
@@ -50,10 +48,7 @@ Route::prefix('/v1')->group(function () {
                     Route::get('/products/{product}', 'show')->name('show');
                 });
                 Route::post('/products', 'store');
-                Route::patch('/products/{product}', 'update')->can(
-                    'update',
-                    'product',
-                );
+                Route::patch('/products/{product}', 'update')->can('update', 'product');
 
                 // Product Price Routes
                 Route::controller(ProductPriceController::class)
@@ -61,21 +56,13 @@ Route::prefix('/v1')->group(function () {
                     ->scopeBindings()
                     ->group(function () {
                         // NOTE: GET should be accessible to GUEST users
-                        Route::withoutMiddleware(['auth:sanctum'])->group(
-                            function () {
-                                Route::get(
-                                    '/products/{product}/prices',
-                                    'index',
-                                );
-                                Route::get(
-                                    '/products/{product}/prices/{price}',
-                                    'show',
-                                )
-                                    ->scopeBindings()
-                                    ->missing(modelNotFound('productPrice'))
-                                    ->name('show');
-                            },
-                        );
+                        Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                            Route::get('/products/{product}/prices', 'index');
+                            Route::get('/products/{product}/prices/{price}', 'show')
+                                ->scopeBindings()
+                                ->missing(modelNotFound('productPrice'))
+                                ->name('show');
+                        });
                         Route::post('/products/{product}/prices', 'store');
                     });
 
@@ -85,15 +72,10 @@ Route::prefix('/v1')->group(function () {
                     ->scopeBindings()
                     ->group(function () {
                         // NOTE: GET should be accessible to GUEST users
-                        Route::withoutMiddleware(['auth:sanctum'])->group(
-                            function () {
-                                Route::get('/products/{product}/tags', 'index');
-                            },
-                        );
-                        Route::put('/products/{product}/tags', 'update')->can(
-                            'update',
-                            'product',
-                        );
+                        Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                            Route::get('/products/{product}/tags', 'index');
+                        });
+                        Route::put('/products/{product}/tags', 'update')->can('update', 'product');
                     });
             });
 
@@ -106,10 +88,7 @@ Route::prefix('/v1')->group(function () {
                     Route::get('/brands/{brand}', 'show')->name('show');
                 });
                 Route::post('/brands', 'store');
-                Route::patch('/brands/{brand}', 'update')->can(
-                    'update',
-                    'brand',
-                );
+                Route::patch('/brands/{brand}', 'update')->can('update', 'brand');
             });
 
         Route::controller(CategoryController::class)
@@ -121,10 +100,7 @@ Route::prefix('/v1')->group(function () {
                     Route::get('/categories/{category}', 'show')->name('show');
                 });
                 Route::post('/categories', 'store');
-                Route::patch('/categories/{category}', 'update')->can(
-                    'update',
-                    'category',
-                );
+                Route::patch('/categories/{category}', 'update')->can('update', 'category');
             });
 
         Route::controller(EstablishmentController::class)
@@ -133,15 +109,25 @@ Route::prefix('/v1')->group(function () {
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/establishments', 'index');
-                    Route::get('/establishments/{establishment}', 'show')->name(
-                        'show',
-                    );
+                    Route::get('/establishments/{establishment}', 'show')->name('show');
                 });
                 Route::post('/establishments', 'store');
-                Route::patch('/establishments/{establishment}', 'update')->can(
-                    'update',
-                    'establishment',
-                );
+                Route::patch('/establishments/{establishment}', 'update')->can('update', 'establishment');
+            });
+
+        Route::controller(StoreTypeController::class)
+            ->missing(modelNotFound('StoreType'))
+            ->name('storetype.')
+            ->group(function () {
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    Route::get('/store_types', 'index');
+                    Route::get('/store_types/{storeType}', 'show')->name('show');
+                });
+                // Route::post('/storetypes', 'store');
+                // Route::patch('/storetypes/{storetype}', 'update')->can(
+                //     'update',
+                //     'storetype',
+                // );
             });
     });
 
