@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Traits\AssertionTrait;
 use App\Models\Brand;
+use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,9 +45,6 @@ class BrandService
 
     /**
      * Create the existing record or create a new one
-     *
-     * @param array $data
-     * @return Brand
      */
     public function firstOrCreate(array $data): Brand
     {

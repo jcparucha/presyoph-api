@@ -17,7 +17,7 @@ trait HasExistsField
 
         return [
             $isRequired ? 'required' : 'sometimes',
-            'exists:' . $table . ',' . $column,
+            'exists:'.$table.','.$column,
         ];
     }
 }

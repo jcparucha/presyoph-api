@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -18,15 +17,13 @@ class CategorySeeder extends Seeder
                 'id' => 1,
                 'name' => 'Baby Needs',
                 'slug' => 'baby-needs',
-                'description' =>
-                    'Milk formula, baby food, diapers, wipes, etc.',
+                'description' => 'Milk formula, baby food, diapers, wipes, etc.',
             ],
             [
                 'id' => 2,
                 'name' => 'beverages',
                 'slug' => 'beverages',
-                'description' =>
-                    'Soft drinks, juices, coffee, tea, bottled water, etc.',
+                'description' => 'Soft drinks, juices, coffee, tea, bottled water, etc.',
             ],
             [
                 'id' => 3,
@@ -38,15 +35,13 @@ class CategorySeeder extends Seeder
                 'id' => 4,
                 'name' => 'Canned Goods',
                 'slug' => 'canned-goods',
-                'description' =>
-                    'Sardines, tuna, corned beef, beans, soups, etc.',
+                'description' => 'Sardines, tuna, corned beef, beans, soups, etc.',
             ],
             [
                 'id' => 5,
                 'name' => 'Condiments and Sauces',
                 'slug' => 'condiments-and-sauces',
-                'description' =>
-                    'Soy sauce, vinegar, ketchup, mayonnaise, oil, etc.',
+                'description' => 'Soy sauce, vinegar, ketchup, mayonnaise, oil, etc.',
             ],
             [
                 'id' => 6,
@@ -64,8 +59,7 @@ class CategorySeeder extends Seeder
                 'id' => 8,
                 'name' => 'Frozen Foods',
                 'slug' => 'frozen-foods',
-                'description' =>
-                    'Frozen meats, dumplings, veggies, ice cream, etc.',
+                'description' => 'Frozen meats, dumplings, veggies, ice cream, etc.',
             ],
             [
                 'id' => 9,
@@ -83,8 +77,7 @@ class CategorySeeder extends Seeder
                 'id' => 11,
                 'name' => 'Household Essentials',
                 'slug' => 'household-essentials',
-                'description' =>
-                    'Detergent, dishwashing liquid, tissue, mops, etc.',
+                'description' => 'Detergent, dishwashing liquid, tissue, mops, etc.',
             ],
             [
                 'id' => 12,
@@ -114,8 +107,7 @@ class CategorySeeder extends Seeder
                 'id' => 16,
                 'name' => 'Pet Supplies',
                 'slug' => 'pet-supplies',
-                'description' =>
-                    'Dog food, cat food, treats, grooming items, etc.',
+                'description' => 'Dog food, cat food, treats, grooming items, etc.',
             ],
             [
                 'id' => 17,
@@ -157,8 +149,7 @@ class CategorySeeder extends Seeder
                 'id' => 23,
                 'name' => 'Vegetables',
                 'slug' => 'vegetables',
-                'description' =>
-                    'Leafy greens, root crops, peppers, onions, etc.',
+                'description' => 'Leafy greens, root crops, peppers, onions, etc.',
             ],
         ]);
     }

@@ -18,7 +18,7 @@ class AlphaSpace implements ValidationRule
         mixed $value,
         Closure $fail,
     ): void {
-        if (!preg_match('/^[a-zA-Z ]+$/', $value)) {
+        if (! preg_match('/^[a-zA-Z ]+$/', $value)) {
             $fail('The :attribute field must only contain letters.');
         }
     }

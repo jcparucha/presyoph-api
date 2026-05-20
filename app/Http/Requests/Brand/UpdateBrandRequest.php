@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Brand;
 
-use App\Models\Brand;
 use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;

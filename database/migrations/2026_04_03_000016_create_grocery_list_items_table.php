@@ -14,20 +14,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grocery_list_items', function (Blueprint $table) {
-            $table->charset("utf8mb4");
-            $table->collation("utf8mb4_unicode_ci");
+            $table->charset('utf8mb4');
+            $table->collation('utf8mb4_unicode_ci');
 
             $table->id();
             $table->foreignIdFor(GroceryList::class)->constraint();
             $table->foreignIdFor(ProductPrice::class)->constraint();
-            $table->boolean("is_done")->default(0);
-            $table->unsignedTinyInteger("quantity");
-            $table->decimal("price");
-            $table->decimal("subtotal")->storedAs("quantity * price");
+            $table->boolean('is_done')->default(0);
+            $table->unsignedTinyInteger('quantity');
+            $table->decimal('price');
+            $table->decimal('subtotal')->storedAs('quantity * price');
             $table->timestamps(precision: 3);
-            $table->softdeletes("deleted_at", precision: 3);
+            $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(["grocery_list_id", "product_price_id"]);
+            $table->index(['grocery_list_id', 'product_price_id']);
         });
     }
 

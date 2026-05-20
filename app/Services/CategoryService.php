@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Traits\AssertionTrait;
 use App\Models\Category;
+use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,7 +41,7 @@ class CategoryService
         foreach ($this->fields as $field) {
             if (
                 isset($inputs[$field]) &&
-                $category->$field !== $inputs[$field]
+                $inputs[$field] !== $category->$field
             ) {
                 $category->$field = $inputs[$field];
 
@@ -61,9 +61,6 @@ class CategoryService
 
     /**
      * Create the existing record or create a new one
-     *
-     * @param array $data
-     * @return Category
      */
     public function firstOrCreate(array $data): Category
     {

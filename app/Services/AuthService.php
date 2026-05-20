@@ -25,7 +25,7 @@ class AuthService implements AuthServiceInterface
             'password' => Hash::make($data['password']),
         ]);
 
-        return !is_null($newUser);
+        return ! is_null($newUser);
     }
 
     public function login(array $credentials): string
@@ -38,7 +38,7 @@ class AuthService implements AuthServiceInterface
 
         $user = User::where('username', $credentials['username'])->first();
 
-        return !is_null($user)
+        return ! is_null($user)
             ? CredentialStatus::INVALID->name
             : CredentialStatus::NON_EXISTENT->name;
     }

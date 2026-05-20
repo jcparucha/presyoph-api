@@ -38,7 +38,7 @@ class CategoryPolicy
     public function update(User $user, Category $category): Response
     {
         return $user->id === $category->added_by &&
-            !is_null($category->added_by)
+            ! is_null($category->added_by)
             ? Response::allow()
             : Response::denyAsNotFound();
     }
