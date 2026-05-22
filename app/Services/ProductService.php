@@ -60,9 +60,7 @@ class ProductService
                     'name' => $data['brand'],
                 ]);
 
-                $category = $this->categoryService->firstOrCreate(
-                    $data['category'],
-                );
+                $category = $this->categoryService->firstOrCreate($data['category']);
 
                 $unit = Unit::ofUnit($data['unit'])->first();
 
@@ -79,9 +77,7 @@ class ProductService
                     ],
                 );
 
-                $establishment = $this->establishmentService->firstOrCreate(
-                    $data['establishment'],
-                );
+                $establishment = $this->establishmentService->firstOrCreate($data['establishment']);
 
                 // only create initial price for new product on an establishment
                 // to add/update a price, use POST product/{product}/price or PATCH product/{product}/price/{productprice}
@@ -135,17 +131,12 @@ class ProductService
 
     public function delete(string $id): void {}
 
-    protected function generateProductData(
-        Product $product,
-        array $inputs,
-    ): array {
-        $unit = isset($inputs['unit'])
-            ? Unit::ofUnit($inputs['unit'])->first()->id
-            : $product->unit_id;
+    protected function generateProductData(Product $product, array $inputs): array
+    {
+        $unit = isset($inputs['unit']) ? Unit::ofUnit($inputs['unit'])->first()->id : $product->unit_id;
 
         $brand = isset($inputs['brand'])
-            ? $this->brandService->firstOrCreate(['name' => $inputs['brand']])
-                ->id
+            ? $this->brandService->firstOrCreate(['name' => $inputs['brand']])->id
             : $product->brand_id;
 
         $category = isset($inputs['category'])
@@ -157,9 +148,7 @@ class ProductService
 
         $name = $inputs['name'] ?? $product->name;
 
-        $weight = isset($inputs['weight'])
-            ? intval($inputs['weight'])
-            : $product->weight;
+        $weight = isset($inputs['weight']) ? intval($inputs['weight']) : $product->weight;
 
         return [
             'id' => $product->id,
@@ -174,7 +163,7 @@ class ProductService
     /**
      * Check if the changes being made in the product is already exists
      *
-     * A product should be unique by its Brand, Name, Net Weight, and Unit
+     * A product should be unique by its Brand, Name, Weight, and Unit
      */
     protected function validateIfUniqueProduct(array $data): void
     {

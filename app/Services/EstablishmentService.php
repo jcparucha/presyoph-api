@@ -28,9 +28,7 @@ class EstablishmentService
     {
         $perPage = $inputs['per_page'] ?? 20;
 
-        $storeTypeId = $inputs['store_type']
-            ? $this->getStoreType($inputs['store_type'])->id
-            : false;
+        $storeTypeId = $inputs['store_type'] ? $this->getStoreType($inputs['store_type'])->id : false;
 
         $barangayCode = $inputs['barangay_code'] ?? false;
         $munCityCode = $inputs['mun_city_code'] ?? false;
@@ -67,15 +65,10 @@ class EstablishmentService
         return $this->firstOrCreate($data)->load($this->eagerLoad);
     }
 
-    public function update(
-        array $inputs,
-        Establishment $establishment,
-    ): Establishment {
+    public function update(array $inputs, Establishment $establishment): Establishment
+    {
         foreach ($this->fields as $field) {
-            if (
-                isset($inputs[$field]) &&
-                $inputs[$field] !== $establishment->$field
-            ) {
+            if (isset($inputs[$field]) && $inputs[$field] !== $establishment->$field) {
                 $establishment->$field = $inputs[$field];
             }
         }
@@ -88,7 +81,7 @@ class EstablishmentService
     }
 
     /**
-     * Create the existing record or create a new one
+     * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): Establishment
     {

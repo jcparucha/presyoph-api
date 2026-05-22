@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             StoreTypeSeeder::class,
             TagSeeder::class,
             UnitSeeder::class,
+            RegionSeeder::class,
+            ProvinceSeeder::class,
+            MunCitySeeder::class,
+            BarangaySeeder::class,
         ]);
     }
 }

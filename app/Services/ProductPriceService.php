@@ -15,11 +15,7 @@ class ProductPriceService
 
     private $user_id;
 
-    private $eagerLoad = [
-        'user',
-        'establishment.barangay',
-        'establishment.storeType',
-    ];
+    private $eagerLoad = ['user', 'establishment.barangay', 'establishment.storeType'];
 
     /**
      * Create a new class instance.
@@ -49,9 +45,7 @@ class ProductPriceService
 
     public function create(array $inputs, Product $product): ProductPrice
     {
-        return $product
-            ->prices()
-            ->create([...$inputs, 'added_by' => $this->user_id]);
+        return $product->prices()->create([...$inputs, 'added_by' => $this->user_id]);
     }
 
     public function show(ProductPrice $productPrice): ProductPrice
@@ -61,14 +55,11 @@ class ProductPriceService
     }
 
     /**
-     * Create the existing record or create a new one
+     * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): ProductPrice
     {
-        $this->assertShouldHaveKeys(
-            ['product_id', 'establishment_id', 'price'],
-            $data,
-        );
+        $this->assertShouldHaveKeys(['product_id', 'establishment_id', 'price'], $data);
 
         return ProductPrice::firstOrCreate(
             [

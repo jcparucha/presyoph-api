@@ -39,10 +39,7 @@ class CategoryService
     public function update(array $inputs, Category $category): Category
     {
         foreach ($this->fields as $field) {
-            if (
-                isset($inputs[$field]) &&
-                $inputs[$field] !== $category->$field
-            ) {
+            if (isset($inputs[$field]) && $inputs[$field] !== $category->$field) {
                 $category->$field = $inputs[$field];
 
                 // update slug if name was changed
@@ -60,7 +57,7 @@ class CategoryService
     }
 
     /**
-     * Create the existing record or create a new one
+     * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): Category
     {
