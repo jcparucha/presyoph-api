@@ -56,7 +56,7 @@ Integrate **Redis** to handle background queues for internal audit log system.
 
 **⚪State Management**
 
-Migrating my past experiences with _React Context API_ and _Zustand_ into **Redux** to master enterprise-scale state patterns.
+Migrating my past experiences with (**Zustand + Immer**) and native hooks (**React Context API + useReducer**) into **Redux** to master enterprise-scale state patterns.
 
 **⚪Type Safety**
 
