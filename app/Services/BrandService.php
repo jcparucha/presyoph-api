@@ -44,7 +44,7 @@ class BrandService
     }
 
     /**
-     * Create the existing record or create a new one
+     * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): Brand
     {
