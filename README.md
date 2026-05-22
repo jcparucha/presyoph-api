@@ -4,10 +4,10 @@ A crowdsourced price tracking and budgeting application designed to help consume
 
 ## 🛠️ Tech Stack
 
-\- **Backend:** PHP 8.3 + Laravel 13 (REST API)
-\- **Database & Caching:** MySQL, Redis (Queues & Caching)
-\- **Frontend:** ReactJS (Client App) | VueJS (Admin/Back Office)
-\- **Environment:** Docker (Laravel Sail)
+- **Backend:** PHP 8.3 + Laravel 13 (REST API)
+- **Database & Caching:** MySQL, Redis (Queues & Caching)
+- **Frontend:** ReactJS (Client App) | VueJS (Admin/Back Office)
+- **Environment:** Docker (Laravel Sail)
 
 ## 🚀 Current Implementation Status
 
