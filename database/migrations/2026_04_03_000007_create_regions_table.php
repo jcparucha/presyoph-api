@@ -15,7 +15,6 @@ return new class extends Migration
             $table->charset('utf8mb4');
             $table->collation('utf8mb4_unicode_ci');
 
-            $table->integer('id');
             $table->string('name', length: 255);
             $table->char('code', length: 10);
 
