@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroceryList\IndexGroceryListRequest;
 use App\Http\Resources\GroceryListResource;
+use App\Models\GroceryList;
 use App\Models\User;
 use App\Services\GroceryListService;
 use Illuminate\Http\Request;
@@ -33,9 +34,9 @@ class GroceryListController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user, GroceryList $groceryList)
     {
-        //
+        return $this->groceryListService->get($groceryList)->toResource();
     }
 
     /**

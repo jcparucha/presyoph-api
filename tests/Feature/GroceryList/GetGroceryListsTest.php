@@ -16,7 +16,14 @@ class GetGroceryListsTest extends TestCase
     private $url = '/api/v1/users/:id/grocery_lists';
 
     private $dataStructure = [
-        ['id', 'name', 'slug', 'description', 'published', 'created_at', 'updated_at', 'created_by'],
+        'id',
+        'name',
+        'slug',
+        'description',
+        'published',
+        'created_at',
+        'updated_at',
+        'created_by',
     ];
 
     public function test_return_user_empty_grocery_lists(): void
@@ -43,7 +50,7 @@ class GetGroceryListsTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure(['data' => $this->dataStructure])
+            ->assertJsonStructure(['data' => [$this->dataStructure]])
             ->assertJson(function (AssertableJson $json) {
                 $json->has('data', 4);
             });
@@ -60,13 +67,13 @@ class GetGroceryListsTest extends TestCase
             )
             ->create();
 
-        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=false');
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url).'?published=false');
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure(['data' => $this->dataStructure])
+            ->assertJsonStructure(['data' => [$this->dataStructure]])
             ->assertJson(function (AssertableJson $json) {
-                $json->has('data', 2, fn(AssertableJson $json) => $json->where('published', 0)->etc());
+                $json->has('data', 2, fn (AssertableJson $json) => $json->where('published', 0)->etc());
             });
     }
 
@@ -81,13 +88,13 @@ class GetGroceryListsTest extends TestCase
             )
             ->create();
 
-        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=true');
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url).'?published=true');
 
         $response
             ->assertStatus(200)
-            ->assertJsonStructure(['data' => $this->dataStructure])
+            ->assertJsonStructure(['data' => [$this->dataStructure]])
             ->assertJson(function (AssertableJson $json) {
-                $json->has('data', 2, fn(AssertableJson $json) => $json->where('published', 1)->etc());
+                $json->has('data', 2, fn (AssertableJson $json) => $json->where('published', 1)->etc());
             });
     }
 
@@ -95,10 +102,49 @@ class GetGroceryListsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=yes');
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url).'?published=yes');
 
         $response->assertStatus(422)->assertJson(['message' => 'The published field must be true or false.']);
     }
 
     // TODO create test for specific grocery list
+    public function test_return_user_specific_grocery_list(): void
+    {
+        $user = User::factory()->create();
+
+        $groceryList = GroceryList::factory()
+            ->count(2)
+            ->sequence(['name' => 'Grocery List'], ['name' => 'Test Grocery List'])
+            ->for($user)
+            ->create();
+
+        $first = $groceryList->first();
+
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url).'/'.$first->slug);
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure(['data' => $this->dataStructure])
+            ->assertJson([
+                'data' => [
+                    'id' => $first->id,
+                    'name' => 'Grocery List',
+                    'slug' => $first->slug,
+                    'description' => $first->description,
+                    'published' => intval($first->is_public),
+                    'created_at' => $first->created_at->toISOString(),
+                    'updated_at' => $first->updated_at->toISOString(),
+                    'created_by' => $user->username,
+                ],
+            ]);
+    }
+
+    public function test_return_user_specific_non_existing_grocery_list(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url).'/non-existing-slug');
+
+        $response->assertNotFound()->assertJson(['error' => 'GroceryList not found.']);
+    }
 }

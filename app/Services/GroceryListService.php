@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\GroceryList;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
@@ -27,5 +28,10 @@ class GroceryListService
             },
             'groceryLists.user',
         ])->groceryLists;
+    }
+
+    public function get(GroceryList $groceryList): GroceryList
+    {
+        return $groceryList->load('user');
     }
 }

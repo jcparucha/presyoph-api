@@ -121,7 +121,7 @@ Route::prefix('/v1')->group(function () {
                 });
             });
 
-        Route::missing(modelNotFound('StoreType'))
+        Route::missing(modelNotFound('User'))
             ->name('user.')
             ->group(function () {
                 // Grocery Lists
@@ -131,6 +131,9 @@ Route::prefix('/v1')->group(function () {
                         // NOTE: GET should be accessible to GUEST users
                         Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                             Route::get('/users/{user}/grocery_lists', 'index');
+                            Route::get('/users/{user}/grocery_lists/{groceryList:slug}', 'show')
+                                ->scopeBindings()
+                                ->missing(modelNotFound('GroceryList'));
                         });
                     });
             });
