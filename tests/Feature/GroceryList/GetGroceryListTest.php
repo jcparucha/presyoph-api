@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
-class GetGroceryListsTest extends TestCase
+class GetGroceryListTest extends TestCase
 {
     use RefreshDatabase;
 
