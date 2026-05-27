@@ -15,8 +15,17 @@ class GroceryListService
         //
     }
 
-    public function all(User $user): Collection
+    public function all(?bool $published, User $user): Collection
     {
-        return $user->load('groceryLists.user')->groceryLists;
+        return $user->load([
+            'groceryLists' => function ($query) use ($published) {
+                if (is_null($published)) {
+                    return;
+                }
+
+                $published ? $query->published() : $query->unpublished();
+            },
+            'groceryLists.user',
+        ])->groceryLists;
     }
 }

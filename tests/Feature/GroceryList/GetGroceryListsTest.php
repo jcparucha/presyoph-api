@@ -28,10 +28,15 @@ class GetGroceryListsTest extends TestCase
         $response->assertStatus(200)->assertJson(['data' => []]);
     }
 
-    public function test_return_user_unpublished_grocery_lists(): void
+    public function test_return_user_all_grocery_lists(): void
     {
         $user = User::factory()
-            ->has(GroceryList::factory()->count(3), 'groceryLists')
+            ->has(
+                GroceryList::factory()
+                    ->count(4)
+                    ->sequence(['is_public' => 0], ['is_public' => 1]),
+                'groceryLists',
+            )
             ->create();
 
         $response = $this->getJson(Str::replace(':id', $user->id, $this->url));
@@ -40,26 +45,59 @@ class GetGroceryListsTest extends TestCase
             ->assertStatus(200)
             ->assertJsonStructure(['data' => $this->dataStructure])
             ->assertJson(function (AssertableJson $json) {
-                // check that data should return 3 unpublished grocery list
-                $json->has('data', 3, fn (AssertableJson $json) => $json->where('published', 0)->etc());
+                $json->has('data', 4);
+            });
+    }
+
+    public function test_return_user_unpublished_grocery_lists(): void
+    {
+        $user = User::factory()
+            ->has(
+                GroceryList::factory()
+                    ->count(4)
+                    ->sequence(['is_public' => 0], ['is_public' => 1]),
+                'groceryLists',
+            )
+            ->create();
+
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=false');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure(['data' => $this->dataStructure])
+            ->assertJson(function (AssertableJson $json) {
+                $json->has('data', 2, fn(AssertableJson $json) => $json->where('published', 0)->etc());
             });
     }
 
     public function test_return_user_published_grocery_lists(): void
     {
         $user = User::factory()
-            ->has(GroceryList::factory()->published()->count(3), 'groceryLists')
+            ->has(
+                GroceryList::factory()
+                    ->count(4)
+                    ->sequence(['is_public' => 0], ['is_public' => 1]),
+                'groceryLists',
+            )
             ->create();
 
-        $response = $this->getJson(Str::replace(':id', $user->id, $this->url));
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=true');
 
         $response
             ->assertStatus(200)
             ->assertJsonStructure(['data' => $this->dataStructure])
             ->assertJson(function (AssertableJson $json) {
-                // check that data should return 3 published grocery list
-                $json->has('data', 3, fn (AssertableJson $json) => $json->where('published', 1)->etc());
+                $json->has('data', 2, fn(AssertableJson $json) => $json->where('published', 1)->etc());
             });
+    }
+
+    public function test_return_422_error_for_incorrect_published_value(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson(Str::replace(':id', $user->id, $this->url) . '?published=yes');
+
+        $response->assertStatus(422)->assertJson(['message' => 'The published field must be true or false.']);
     }
 
     // TODO create test for specific grocery list
