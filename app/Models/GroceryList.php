@@ -13,6 +13,15 @@ class GroceryList extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'slug', 'description', 'is_public', 'created_by'];
+
+    protected static function booted(): void
+    {
+        static::creating(function (GroceryList $groceryList) {
+            $groceryList->slug = generate_unique_slug($groceryList->name);
+        });
+    }
+
     public function groceryListItems(): HasMany
     {
         return $this->hasMany(GroceryListItem::class);

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\GroceryList;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class GroceryListService
 {
@@ -33,5 +34,29 @@ class GroceryListService
     public function get(GroceryList $groceryList): GroceryList
     {
         return $groceryList->load('user');
+    }
+
+    public function create(array $data, User $user): GroceryList
+    {
+        $this->validateMaxLimit($user);
+
+        $groceryList = $user->unpublishedGroceryList()->firstOrCreate([
+            'name' => $data['name'],
+            'description' => $data['description'],
+        ]);
+
+        return $groceryList->load('user');
+    }
+
+    private function validateMaxLimit(User $user)
+    {
+        $maxGroceryLists = $user->entitlement->max_grocery_lists;
+
+        // check the user's grocery list, max of 3.
+        if ($user->groceryLists()->count() > $maxGroceryLists) {
+            throw ValidationException::withMessages([
+                'grocery_list' => "Maximum grocery list limit reached. You can only create up to $maxGroceryLists.",
+            ]);
+        }
     }
 }

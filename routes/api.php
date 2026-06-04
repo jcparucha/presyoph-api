@@ -37,7 +37,7 @@ Route::prefix('/v1')->group(function () {
         // Product Routes
         Route::controller(ProductController::class)
             ->missing(modelNotFound('Product'))
-            ->name('products.')
+            ->name('product.')
             ->group(function () {
                 // NOTE: GET should be accessible to GUEST users
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
@@ -132,9 +132,11 @@ Route::prefix('/v1')->group(function () {
                         Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                             Route::get('/users/{user}/grocery_lists', 'index');
                             Route::get('/users/{user}/grocery_lists/{groceryList:slug}', 'show')
+                                ->name('show')
                                 ->scopeBindings()
                                 ->missing(modelNotFound('GroceryList'));
                         });
+                        Route::post('/users/{user}/grocery_lists', 'store');
                     });
             });
     });

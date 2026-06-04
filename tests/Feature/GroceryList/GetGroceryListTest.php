@@ -51,9 +51,7 @@ class GetGroceryListTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure(['data' => [$this->dataStructure]])
-            ->assertJson(function (AssertableJson $json) {
-                $json->has('data', 4);
-            });
+            ->assertJson(fn (AssertableJson $json) => $json->has('data', 4));
     }
 
     public function test_return_user_unpublished_grocery_lists(): void
@@ -72,9 +70,13 @@ class GetGroceryListTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure(['data' => [$this->dataStructure]])
-            ->assertJson(function (AssertableJson $json) {
-                $json->has('data', 2, fn (AssertableJson $json) => $json->where('published', 0)->etc());
-            });
+            ->assertJson(
+                fn (AssertableJson $json) => $json->has(
+                    'data',
+                    2,
+                    fn (AssertableJson $json) => $json->where('published', 0)->etc(),
+                ),
+            );
     }
 
     public function test_return_user_published_grocery_lists(): void
@@ -93,9 +95,13 @@ class GetGroceryListTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure(['data' => [$this->dataStructure]])
-            ->assertJson(function (AssertableJson $json) {
-                $json->has('data', 2, fn (AssertableJson $json) => $json->where('published', 1)->etc());
-            });
+            ->assertJson(
+                fn (AssertableJson $json) => $json->has(
+                    'data',
+                    2,
+                    fn (AssertableJson $json) => $json->where('published', 1)->etc(),
+                ),
+            );
     }
 
     public function test_return_422_error_for_incorrect_published_value(): void
@@ -107,7 +113,6 @@ class GetGroceryListTest extends TestCase
         $response->assertStatus(422)->assertJson(['message' => 'The published field must be true or false.']);
     }
 
-    // TODO create test for specific grocery list
     public function test_return_user_specific_grocery_list(): void
     {
         $user = User::factory()->create();

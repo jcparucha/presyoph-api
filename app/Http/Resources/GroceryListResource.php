@@ -19,7 +19,7 @@ class GroceryListResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'published' => $this->is_public,
+            'published' => boolval($this->is_public),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'created_by' => $this->whenLoaded('user')?->username,

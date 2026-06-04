@@ -8,6 +8,7 @@ use App\Http\Resources\GroceryListResource;
 use App\Models\GroceryList;
 use App\Models\User;
 use App\Services\GroceryListService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,9 +27,21 @@ class GroceryListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user): JsonResponse
     {
-        //
+        $newGroceryList = $this->groceryListService->create($request->all(), $user);
+
+        $newResourceLink = route('user.grocery.show', [
+            'user' => $user->id,
+            'groceryList' => $newGroceryList->slug,
+        ]);
+
+        return $newGroceryList
+            ->toResource()
+            ->additional(['links' => ['related' => $newResourceLink]])
+            ->response()
+            ->header('Location', $newResourceLink)
+            ->setStatusCode($newGroceryList->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
