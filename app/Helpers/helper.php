@@ -10,6 +10,6 @@ if (! function_exists('generate_unique_slug')) {
      */
     function generate_unique_slug(string $value, int $entropy = 8): string
     {
-        return Str::slug(Str::lower($value)).'-'.Str::random($entropy);
+        return Str::slug($value).'-'.Str::random($entropy);
     }
 }

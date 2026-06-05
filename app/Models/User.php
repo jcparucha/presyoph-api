@@ -42,7 +42,7 @@ class User extends Authenticatable
     public function defaultMaxGroceryLists(): HasOne
     {
         return $this->entitlement()->withAttributes([
-            'max_grocery_lists' => config('entitlement.default.max_grocery_lists'),
+            'max_grocery_lists' => config('default.entitlement.max_grocery_lists'),
         ]);
     }
 

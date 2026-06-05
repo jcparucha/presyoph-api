@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => [
+    'entitlement' => [
         'max_grocery_lists' => 3,
     ],
 ];

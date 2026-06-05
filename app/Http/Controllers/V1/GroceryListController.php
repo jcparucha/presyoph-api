@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroceryList\IndexGroceryListRequest;
+use App\Http\Requests\GroceryList\StoreGroceryListRequest;
 use App\Http\Resources\GroceryListResource;
 use App\Models\GroceryList;
 use App\Models\User;
@@ -27,9 +28,9 @@ class GroceryListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, User $user): JsonResponse
+    public function store(StoreGroceryListRequest $request, User $user): JsonResponse
     {
-        $newGroceryList = $this->groceryListService->create($request->all(), $user);
+        $newGroceryList = $this->groceryListService->create($request->validated(), $user);
 
         $newResourceLink = route('user.grocery.show', [
             'user' => $user->id,

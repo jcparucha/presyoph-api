@@ -53,9 +53,9 @@ class GroceryListService
         $maxGroceryLists = $user->entitlement->max_grocery_lists;
 
         // check the user's grocery list, max of 3.
-        if ($user->groceryLists()->count() > $maxGroceryLists) {
+        if ($user->groceryLists->count() >= $maxGroceryLists) {
             throw ValidationException::withMessages([
-                'grocery_list' => "Maximum grocery list limit reached. You can only create up to $maxGroceryLists.",
+                'system' => "Maximum grocery list limit reached. You can only create up to $maxGroceryLists.",
             ]);
         }
     }
