@@ -15,25 +15,14 @@ trait HasArrayField
 
     /**
      * @param  bool  $isDistinct
-     * @param  string  $alphaRule  = 'AlphaSpace', 'AlphaNumSpace', 'AlphaCharNumSpace'
+     * @param  string  $alphaRule  basic | extended | descriptive | technical
      */
-    public function textItemRule(
-        int $max = 25,
-        bool $isRequired = true,
-        string $alphaRule = 'AlphaCharNumSpace',
-    ): array {
-        $this->assertShouldBeInArray(
-            ['AlphaSpace', 'AlphaNumSpace', 'AlphaCharNumSpace'],
-            $alphaRule,
-        );
+    public function textItemRule(int $max = 25, bool $isRequired = true, string $type = 'basic'): array
+    {
+        $specialChars = config('validation.special_chars_sets');
 
-        return [
-            ...$this->nameRule(
-                max: $max,
-                isRequired: $isRequired,
-                alphaRule: $alphaRule,
-            ),
-            'distinct',
-        ];
+        $this->assertShouldBeInArray(array_keys($specialChars), $type);
+
+        return [...$this->nameRule(max: $max, isRequired: $isRequired, type: $type), 'distinct'];
     }
 }

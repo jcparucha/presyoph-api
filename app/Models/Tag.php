@@ -13,6 +13,13 @@ class Tag extends Model
 
     protected $fillable = ['name', 'slug'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Tag $tag) {
+            $tag->slug = generate_unique_slug($tag->name);
+        });
+    }
+
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);

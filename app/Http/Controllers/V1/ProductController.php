@@ -25,9 +25,7 @@ class ProductController extends Controller
      */
     public function index(PaginationRequest $request): JsonResource
     {
-        return ProductResource::collection(
-            $this->productService->all($request->per_page),
-        );
+        return ProductResource::collection($this->productService->all($request->per_page));
     }
 
     /**
@@ -36,7 +34,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request): JsonResponse
     {
         try {
-            $newProduct = $this->productService->create($request->all());
+            $newProduct = $this->productService->create($request->validated());
 
             $this->assertShouldNotBeNull($newProduct);
 
@@ -51,10 +49,7 @@ class ProductController extends Controller
                 ->header('Location', $newResourceLink)
                 ->setStatusCode($newProduct->wasRecentlyCreated ? 201 : 200);
         } catch (Exception $error) {
-            return response()->json(
-                ['message' => $error->getMessage()],
-                $error->getCode(),
-            );
+            return response()->json(['message' => $error->getMessage()], $error->getCode());
         }
     }
 
@@ -69,12 +64,8 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(
-        UpdateProductRequest $request,
-        Product $product,
-    ): JsonResource {
-        return $this->productService
-            ->update($request->validated(), $product)
-            ->toResource();
+    public function update(UpdateProductRequest $request, Product $product): JsonResource
+    {
+        return $this->productService->update($request->validated(), $product)->toResource();
     }
 }

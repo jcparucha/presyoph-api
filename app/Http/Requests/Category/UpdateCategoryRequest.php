@@ -4,9 +4,9 @@ namespace App\Http\Requests\Category;
 
 use App\Traits\Validations\HasTextField;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends CategoryRequest
 {
     use HasTextField;
 
@@ -17,12 +17,11 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $rules = $this->coreRules(isRequired: false);
+
         return [
-            'name' => [
-                ...$this->nameRule(alphaRule: 'AlphaSpace', isRequired: false),
-                'unique:categories,name',
-            ],
-            'description' => $this->descriptionRule(isRequired: false),
+            'name' => [...$rules['name'], Rule::unique('categories', 'name')->ignore($this->category->id)],
+            'description' => $rules['description'],
         ];
     }
 }

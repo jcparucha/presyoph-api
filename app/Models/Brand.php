@@ -13,6 +13,13 @@ class Brand extends Model
 
     protected $fillable = ['name', 'slug', 'added_by'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Brand $brand) {
+            $brand->slug = generate_unique_slug($brand->name);
+        });
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

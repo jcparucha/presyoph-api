@@ -53,9 +53,7 @@ class ProductService
     public function create(array $data): Product
     {
         try {
-            $product = null;
-
-            DB::transaction(function () use ($data, &$product) {
+            $product = DB::transaction(function () use ($data) {
                 $brand = $this->brandService->firstOrCreate([
                     'name' => $data['brand'],
                 ]);
@@ -64,17 +62,16 @@ class ProductService
 
                 $unit = Unit::ofUnit($data['unit'])->first();
 
-                $product = Product::firstOrCreate(
+                $user = Auth::guard('web')->user();
+
+                $product = $user->products()->firstOrCreate(
                     [
                         'name' => $data['name'],
                         'weight' => $data['weight'],
                         'unit_id' => $unit->id,
                         'brand_id' => $brand->id,
                     ],
-                    [
-                        'category_id' => $category->id,
-                        'added_by' => Auth::guard('web')->user()->id,
-                    ],
+                    ['category_id' => $category->id],
                 );
 
                 $establishment = $this->establishmentService->firstOrCreate($data['establishment']);
@@ -91,16 +88,16 @@ class ProductService
                 if ($product->wasRecentlyCreated) {
                     $this->tagService->syncTags($product, $data['tags']);
                 }
+
+                return $product;
             });
 
-            return ! is_null($product)
-                ? $product->load([
-                    ...$this->eagerLoad,
-                    'prices' => function ($query) {
-                        $query->latestPerEstablishment();
-                    },
-                ])
-                : null;
+            return $product->load([
+                ...$this->eagerLoad,
+                'prices' => function ($query) {
+                    $query->latestPerEstablishment();
+                },
+            ]);
         } catch (Exception $error) {
             throw new Exception($error->getMessage(), 500);
         }
@@ -178,7 +175,7 @@ class ProductService
 
         if (! is_null($product)) {
             throw ValidationException::withMessages([
-                'product' => __('validation.unique', [
+                'system' => __('validation.unique', [
                     'attribute' => 'product',
                 ]),
             ]);

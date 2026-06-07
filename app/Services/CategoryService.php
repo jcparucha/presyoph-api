@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CategoryService
 {
@@ -40,12 +41,12 @@ class CategoryService
     {
         foreach ($this->fields as $field) {
             if (isset($inputs[$field]) && $inputs[$field] !== $category->$field) {
-                $category->$field = $inputs[$field];
-
-                // update slug if name was changed
-                if ($field === 'name') {
-                    $category->slug = generate_unique_slug('name');
+                // update slug first if name was changed
+                if ($field === 'name' && Str::lower($category->$field) !== Str::lower($inputs[$field])) {
+                    $category->slug = generate_unique_slug($inputs[$field]);
                 }
+
+                $category->$field = $inputs[$field];
             }
         }
 
@@ -53,7 +54,7 @@ class CategoryService
             $category->save();
         }
 
-        return $category->refresh();
+        return $category;
     }
 
     /**
@@ -63,13 +64,10 @@ class CategoryService
     {
         $this->assertShouldHaveKeys($this->fields, $data);
 
-        return Category::firstOrCreate(
-            ['name' => $data['name']],
-            [
-                'slug' => generate_unique_slug($data['name']),
-                'description' => $data['description'] ?? null,
-                'added_by' => Auth::guard('web')->user()->id,
-            ],
-        );
+        $user = Auth::guard('web')->user();
+
+        return $user
+            ->categories()
+            ->firstOrCreate(['name' => $data['name']], ['description' => $data['description'] ?? null]);
     }
 }

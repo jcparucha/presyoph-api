@@ -38,7 +38,7 @@ class EstablishmentService
         $establishments = Establishment::with($this->eagerLoad);
 
         if ($storeTypeId) {
-            $establishments->OfStoreType($storeTypeId);
+            $establishments->ofStoreType($storeTypeId);
         }
 
         if ($barangayCode) {
@@ -68,6 +68,20 @@ class EstablishmentService
     public function update(array $inputs, Establishment $establishment): Establishment
     {
         foreach ($this->fields as $field) {
+            // handle the store_type logic
+            if ($field === 'store_type') {
+                $storeType = $this->getStoreType($inputs['store_type']);
+
+                // if they're not the same, update the establishment store_type_id
+                if ($establishment->store_type_id !== $storeType->id) {
+                    $establishment->store_type_id = $storeType->id;
+                }
+
+                // skip the loop so it will not reach the bottom code
+                // establishment doesn't have 'store_type' attribute.
+                continue;
+            }
+
             if (isset($inputs[$field]) && $inputs[$field] !== $establishment->$field) {
                 $establishment->$field = $inputs[$field];
             }
@@ -87,16 +101,17 @@ class EstablishmentService
     {
         $this->assertShouldHaveKeys($this->fields, $data);
 
+        $user = Auth::guard('web')->user();
+
         $storeType = $this->getStoreType($data['store_type']);
 
-        return Establishment::firstOrCreate(
+        return $user->establishments()->firstOrCreate(
             [
                 'name' => $data['name'],
                 'barangay_code' => $data['barangay_code'],
             ],
             [
                 'store_type_id' => $storeType->id,
-                'added_by' => Auth::guard('web')->user()->id,
             ],
         );
     }
