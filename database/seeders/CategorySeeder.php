@@ -21,7 +21,7 @@ class CategorySeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'name' => 'beverages',
+                'name' => 'Beverages',
                 'slug' => 'beverages',
                 'description' => 'Soft drinks, juices, coffee, tea, bottled water, etc.',
             ],

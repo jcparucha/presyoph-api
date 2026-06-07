@@ -50,12 +50,8 @@ class BrandService
     {
         $this->assertShouldHaveKeys(['name'], $data);
 
-        return Brand::firstOrCreate(
-            ['name' => $data['name']],
-            [
-                'slug' => generate_unique_slug($data['name']),
-                'added_by' => Auth::guard('web')->user()->id,
-            ],
-        );
+        $user = Auth::guard('web')->user();
+
+        return $user->brands()->firstOrCreate(['name' => $data['name']]);
     }
 }

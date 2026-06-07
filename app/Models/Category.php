@@ -13,6 +13,13 @@ class Category extends Model
 
     protected $fillable = ['name', 'slug', 'description', 'added_by'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Category $category) {
+            $category->slug = generate_unique_slug($category->name);
+        });
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

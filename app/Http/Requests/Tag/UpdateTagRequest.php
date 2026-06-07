@@ -2,14 +2,10 @@
 
 namespace App\Http\Requests\Tag;
 
-use App\Traits\Validations\HasArrayField;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTagRequest extends FormRequest
+class UpdateTagRequest extends TagRequest
 {
-    use HasArrayField;
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -17,9 +13,6 @@ class UpdateTagRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'tags' => $this->arrayRule(isRequired: false),
-            'tags.*' => $this->textItemRule(max: 25, alphaRule: 'AlphaSpace'),
-        ];
+        return $this->coreRules();
     }
 }

@@ -49,7 +49,7 @@ class TagService
     {
         $newTags = $this->getNewTags($tags);
 
-        // only sync tags with create_at if have new tags
+        // sync tags with have new tags
         if (count($newTags)) {
             $product->tags()->sync($newTags);
         }
@@ -89,15 +89,11 @@ class TagService
      *
      * @param  array  $field  = choose the returned collection values; either tag 'id' or 'name'
      */
-    private function getExistingTags(
-        array $tags,
-        string $field = 'id',
-    ): Collection {
+    private function getExistingTags(array $tags, string $field = 'id'): Collection
+    {
         $this->assertShouldBeInArray(['id', 'name'], $field);
 
-        return Tag::whereIn('name', $tags)
-            ->get()
-            ->map(fn (Tag $tag) => $tag[$field]);
+        return Tag::whereIn('name', $tags)->get()->map(fn (Tag $tag) => $tag[$field]);
     }
 
     /**
@@ -114,33 +110,20 @@ class TagService
 
         $existingTags = $this->getExistingTags($tags, 'name');
 
-        return $tagsCollection
-            ->diff($existingTags)
-            ->transform(function (string $newTag) {
-                return [
-                    'name' => $newTag,
-                    'slug' => generate_unique_slug($newTag),
-                    'added_by' => Auth::guard('web')->user()->id,
-                    'created_at' => now(),
-                ];
-            })
-            ->values();
+        return $tagsCollection->diff($existingTags)->transform(fn (string $newTag) => ['name' => $newTag])->values();
     }
 
     /**
      * Save non-existing tags and return their tag IDs
      */
-    private function saveNonExistingTags(
-        array $nonExistingTags,
-        array $tags,
-    ): array {
+    private function saveNonExistingTags(array $nonExistingTags, array $tags): array
+    {
+        $user = Auth::guard('web')->user();
+
         // if have new tag, insert to DB
-        Tag::insert($nonExistingTags);
+        $user->tags()->createMany([$nonExistingTags]);
 
         // get all tag ids.
-        return Tag::whereIn('name', $tags)
-            ->get()
-            ->map(fn (Tag $tag) => $tag->id)
-            ->all();
+        return Tag::whereIn('name', $tags)->get()->map(fn (Tag $tag) => $tag->id)->all();
     }
 }
