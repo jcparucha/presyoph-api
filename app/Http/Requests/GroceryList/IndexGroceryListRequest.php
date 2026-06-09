@@ -15,9 +15,9 @@ class IndexGroceryListRequest extends FormRequest
         // $this->published = $this->published === 'true' ? true : false;
         if ($this->has('published')) {
             $this->merge([
-                'published' => in_array($this->published, ['TRUE', 'true', '1', 1])
+                'published' => in_array($this->published, ['TRUE', 'true', '1', 1, true])
                     ? true
-                    : (in_array($this->published, ['FALSE', 'false', '0', 0])
+                    : (in_array($this->published, ['FALSE', 'false', '0', 0, false])
                         ? false
                         : $this->published),
             ]);
