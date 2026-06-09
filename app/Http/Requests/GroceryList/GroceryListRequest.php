@@ -26,8 +26,8 @@ class GroceryListRequest extends FormRequest
     public function coreRules(): array
     {
         return [
-            'name' => $this->_nameRule(type: 'extended'),
-            'description' => $this->_descriptionRule(type: 'descriptive'),
+            'name' => $this->nameRule(type: 'extended'),
+            'description' => $this->descriptionRule(type: 'descriptive'),
         ];
     }
 }
