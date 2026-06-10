@@ -21,6 +21,10 @@ class TextRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if (is_array($value)) {
+            return;
+        }
+
         $whitespace = $this->allowSpace ? '\s' : '';
         $numbers = $this->allowNumbers ? '\pN' : '';
         $characters = $this->allowCharacters ? preg_quote($this->allowCharacters, '/') : '';

@@ -5,10 +5,13 @@ namespace App\Services;
 use App\Models\GroceryList;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class GroceryListService
 {
+    private $fields = ['name', 'description'];
+
     /**
      * Create a new class instance.
      */
@@ -44,6 +47,26 @@ class GroceryListService
             'name' => $data['name'],
             'description' => $data['description'],
         ]);
+
+        return $groceryList->load('user');
+    }
+
+    public function update(array $inputs, GroceryList $groceryList): GroceryList
+    {
+        foreach ($this->fields as $field) {
+            if (isset($inputs[$field]) && $inputs[$field] !== $groceryList->$field) {
+                // update slug first if name was changed
+                if ($field === 'name' && Str::lower($groceryList->$field) !== Str::lower($inputs[$field])) {
+                    $groceryList->slug = generate_unique_slug($inputs[$field]);
+                }
+
+                $groceryList->$field = $inputs[$field];
+            }
+        }
+
+        if ($groceryList->isDirty()) {
+            $groceryList->save();
+        }
 
         return $groceryList->load('user');
     }

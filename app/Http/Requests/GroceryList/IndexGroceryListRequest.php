@@ -12,12 +12,11 @@ class IndexGroceryListRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // $this->published = $this->published === 'true' ? true : false;
         if ($this->has('published')) {
             $this->merge([
-                'published' => in_array($this->published, ['TRUE', 'true', '1', 1, true])
+                'published' => in_array($this->published, ['TRUE', 'true', '1'])
                     ? true
-                    : (in_array($this->published, ['FALSE', 'false', '0', 0, false])
+                    : (in_array($this->published, ['FALSE', 'false', '0'])
                         ? false
                         : $this->published),
             ]);

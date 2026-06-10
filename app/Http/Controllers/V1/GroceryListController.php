@@ -5,12 +5,12 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroceryList\IndexGroceryListRequest;
 use App\Http\Requests\GroceryList\StoreGroceryListRequest;
+use App\Http\Requests\GroceryList\UpdateGroceryListRequest;
 use App\Http\Resources\GroceryListResource;
 use App\Models\GroceryList;
 use App\Models\User;
 use App\Services\GroceryListService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class GroceryListController extends Controller
@@ -56,9 +56,9 @@ class GroceryListController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateGroceryListRequest $request, User $user, GroceryList $groceryList): JsonResource
     {
-        //
+        return $this->groceryListService->update($request->validated(), $groceryList)->toResource();
     }
 
     /**

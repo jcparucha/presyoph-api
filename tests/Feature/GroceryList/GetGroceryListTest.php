@@ -13,7 +13,7 @@ class GetGroceryListTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $url = '/api/v1/users/:id/grocery_lists';
+    private $url = '/api/v1/users/:id/groceryLists';
 
     private $dataStructure = [
         'id',
@@ -74,7 +74,7 @@ class GetGroceryListTest extends TestCase
                 fn (AssertableJson $json) => $json->has(
                     'data',
                     2,
-                    fn (AssertableJson $json) => $json->where('published', 0)->etc(),
+                    fn (AssertableJson $json) => $json->where('published', false)->etc(),
                 ),
             );
     }
@@ -99,7 +99,7 @@ class GetGroceryListTest extends TestCase
                 fn (AssertableJson $json) => $json->has(
                     'data',
                     2,
-                    fn (AssertableJson $json) => $json->where('published', 1)->etc(),
+                    fn (AssertableJson $json) => $json->where('published', true)->etc(),
                 ),
             );
     }

@@ -26,7 +26,6 @@ class GroceryListFactory extends Factory
             'slug' => generate_unique_slug($name),
             'description' => fake()->text(),
             'is_public' => false,
-            'created_by' => 1, // default user_id, but use Factory Relationship
         ];
     }
 

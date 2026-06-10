@@ -123,6 +123,7 @@ Route::prefix('/v1')->group(function () {
 
         Route::missing(modelNotFound('User'))
             ->name('user.')
+            ->scopeBindings()
             ->group(function () {
                 // Grocery Lists
                 Route::controller(GroceryListController::class)
@@ -130,13 +131,15 @@ Route::prefix('/v1')->group(function () {
                     ->group(function () {
                         // NOTE: GET should be accessible to GUEST users
                         Route::withoutMiddleware(['auth:sanctum'])->group(function () {
-                            Route::get('/users/{user}/grocery_lists', 'index');
-                            Route::get('/users/{user}/grocery_lists/{groceryList:slug}', 'show')
+                            Route::get('/users/{user}/groceryLists', 'index');
+                            Route::get('/users/{user}/groceryLists/{groceryList:slug}', 'show')
                                 ->name('show')
-                                ->scopeBindings()
                                 ->missing(modelNotFound('GroceryList'));
                         });
-                        Route::post('/users/{user}/grocery_lists', 'store');
+                        Route::post('/users/{user}/groceryLists', 'store');
+                        Route::patch('/users/{user}/groceryLists/{groceryList}', 'update')
+                            ->can('update', 'groceryList')
+                            ->missing(modelNotFound('GroceryList'));
                     });
             });
     });

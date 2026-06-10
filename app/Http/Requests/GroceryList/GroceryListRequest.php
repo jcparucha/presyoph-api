@@ -23,11 +23,11 @@ class GroceryListRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function coreRules(): array
+    public function coreRules(bool $isRequired = true): array
     {
         return [
-            'name' => $this->nameRule(type: 'extended'),
-            'description' => $this->descriptionRule(type: 'descriptive'),
+            'name' => $this->nameRule(type: 'extended', isRequired: $isRequired),
+            'description' => $this->descriptionRule(type: 'descriptive', isRequired: $isRequired),
         ];
     }
 }

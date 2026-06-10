@@ -12,7 +12,7 @@ class StoreGroceryListTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $url = '/api/v1/users/:id/grocery_lists';
+    private $url = '/api/v1/users/:id/groceryLists';
 
     private $dataStructure = [
         'id',
@@ -25,7 +25,6 @@ class StoreGroceryListTest extends TestCase
         'created_by',
     ];
 
-    // TODO implement Store logic
     public function test_return_401_when_user_is_not_authenticated(): void
     {
         $user = User::factory()->create();
@@ -115,6 +114,21 @@ class StoreGroceryListTest extends TestCase
         $response2->assertCreated();
         $response3->assertCreated();
         $response4->assertUnprocessable()->assertJsonValidationErrorFor('system', 'errors');
+    }
+
+    public function test_return_validation_error_payload_must_be_a_string(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $user->defaultMaxGroceryLists()->create();
+        $url = Str::replace(':id', $user->id, $this->url);
+
+        $response = $this->actingAs($user, 'web')->postJson($url, [
+            'name' => ['test'],
+            'description' => [],
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors(['name', 'description'], 'errors');
     }
 
     public function test_return_201_created_when_successfully_creating_grocery_list(): void
@@ -215,9 +229,4 @@ class StoreGroceryListTest extends TestCase
                     ),
             );
     }
-
-    // TODO add PATCH feature test for grocery list
-    // TODO add GET feature test for grocery list items
-    // TODO add POST feature test for grocery list
-    // TODO add PATCH feature test for grocery list
 }

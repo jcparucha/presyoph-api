@@ -26,6 +26,7 @@ trait HasTextField
         $this->assertShouldBeInArray(array_keys($specialChars), $type);
 
         return [
+            'string',
             $isRequired ? 'required' : 'sometimes',
             'min:'.$min,
             'max:'.$max,
@@ -50,6 +51,7 @@ trait HasTextField
         $this->assertShouldBeInArray(array_keys($specialChars), $type);
 
         return array_filter([
+            'string',
             $isRequired ? 'required' : 'sometimes',
             $isNullable ? 'nullable' : '',
             'min:'.$min,
