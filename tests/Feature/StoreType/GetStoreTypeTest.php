@@ -7,7 +7,7 @@ use Database\Seeders\StoreTypeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class GetStoreTypesTest extends TestCase
+class GetStoreTypeTest extends TestCase
 {
     use RefreshDatabase;
 

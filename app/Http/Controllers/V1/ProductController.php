@@ -38,7 +38,7 @@ class ProductController extends Controller
 
             $this->assertShouldNotBeNull($newProduct);
 
-            $newResourceLink = route('products.show', [
+            $newResourceLink = route('product.show', [
                 'product' => $newProduct->id,
             ]);
 

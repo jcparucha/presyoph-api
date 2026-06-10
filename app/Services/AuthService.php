@@ -25,6 +25,9 @@ class AuthService implements AuthServiceInterface
             'password' => Hash::make($data['password']),
         ]);
 
+        // add default entitlement
+        $newUser->defaultMaxGroceryLists()->create();
+
         return ! is_null($newUser);
     }
 
@@ -38,9 +41,7 @@ class AuthService implements AuthServiceInterface
 
         $user = User::where('username', $credentials['username'])->first();
 
-        return ! is_null($user)
-            ? CredentialStatus::INVALID->name
-            : CredentialStatus::NON_EXISTENT->name;
+        return ! is_null($user) ? CredentialStatus::INVALID->name : CredentialStatus::NON_EXISTENT->name;
     }
 
     public function logout(): void

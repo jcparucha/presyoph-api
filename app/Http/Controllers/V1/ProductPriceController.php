@@ -14,35 +14,24 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductPriceController extends Controller
 {
-    public function __construct(
-        private ProductPriceService $productPriceService,
-    ) {}
+    public function __construct(private ProductPriceService $productPriceService) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index(
-        PaginationRequest $request,
-        Product $product,
-    ): JsonResource {
-        return ProductPriceResource::collection(
-            $this->productPriceService->all($request->validated(), $product),
-        );
+    public function index(PaginationRequest $request, Product $product): JsonResource
+    {
+        return ProductPriceResource::collection($this->productPriceService->all($request->validated(), $product));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(
-        StoreProductPriceRequest $request,
-        Product $product,
-    ): JsonResponse {
-        $productPrice = $this->productPriceService->create(
-            $request->validated(),
-            $product,
-        );
+    public function store(StoreProductPriceRequest $request, Product $product): JsonResponse
+    {
+        $productPrice = $this->productPriceService->create($request->validated(), $product);
 
-        $newResourceLink = route('products.prices.show', [
+        $newResourceLink = route('product.prices.show', [
             'product' => $product->id,
             'price' => $productPrice->id,
         ]);

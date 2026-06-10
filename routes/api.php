@@ -4,6 +4,7 @@ use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\BrandController;
 use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\EstablishmentController;
+use App\Http\Controllers\V1\GroceryListController;
 use App\Http\Controllers\V1\ProductController;
 use App\Http\Controllers\V1\ProductPriceController;
 use App\Http\Controllers\V1\StoreTypeController;
@@ -23,10 +24,6 @@ Route::get('/ping', function () {
 });
 
 Route::prefix('/v1')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->middleware('auth:sanctum');
-
     // SPA should request to GET sanctum/csrf-cookie
     // and save the values in XSRF-TOKEN and include XSRF-TOKEN in response
 
@@ -40,7 +37,7 @@ Route::prefix('/v1')->group(function () {
         // Product Routes
         Route::controller(ProductController::class)
             ->missing(modelNotFound('Product'))
-            ->name('products.')
+            ->name('product.')
             ->group(function () {
                 // NOTE: GET should be accessible to GUEST users
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
@@ -69,7 +66,6 @@ Route::prefix('/v1')->group(function () {
                 // Product Tags
                 Route::controller(TagController::class)
                     ->name('tags.')
-                    ->scopeBindings()
                     ->group(function () {
                         // NOTE: GET should be accessible to GUEST users
                         Route::withoutMiddleware(['auth:sanctum'])->group(function () {
@@ -123,11 +119,28 @@ Route::prefix('/v1')->group(function () {
                     Route::get('/store_types', 'index');
                     Route::get('/store_types/{storeType}', 'show')->name('show');
                 });
-                // Route::post('/storetypes', 'store');
-                // Route::patch('/storetypes/{storetype}', 'update')->can(
-                //     'update',
-                //     'storetype',
-                // );
+            });
+
+        Route::missing(modelNotFound('User'))
+            ->name('user.')
+            ->scopeBindings()
+            ->group(function () {
+                // Grocery Lists
+                Route::controller(GroceryListController::class)
+                    ->name('grocery.')
+                    ->group(function () {
+                        // NOTE: GET should be accessible to GUEST users
+                        Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                            Route::get('/users/{user}/groceryLists', 'index');
+                            Route::get('/users/{user}/groceryLists/{groceryList:slug}', 'show')
+                                ->name('show')
+                                ->missing(modelNotFound('GroceryList'));
+                        });
+                        Route::post('/users/{user}/groceryLists', 'store');
+                        Route::patch('/users/{user}/groceryLists/{groceryList}', 'update')
+                            ->can('update', 'groceryList')
+                            ->missing(modelNotFound('GroceryList'));
+                    });
             });
     });
 

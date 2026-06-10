@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['username', 'password'];
 
@@ -37,6 +39,18 @@ class User extends Authenticatable
         return $this->hasMany(Category::class, 'added_by');
     }
 
+    public function defaultMaxGroceryLists(): HasOne
+    {
+        return $this->entitlement()->withAttributes([
+            'max_grocery_lists' => config('default.entitlement.max_grocery_lists'),
+        ]);
+    }
+
+    public function entitlement(): HasOne
+    {
+        return $this->hasOne(UserEntitlement::class);
+    }
+
     public function establishments(): HasMany
     {
         return $this->hasMany(Establishment::class, 'added_by');
@@ -60,6 +74,11 @@ class User extends Authenticatable
     public function tags(): HasMany
     {
         return $this->hasMany(Tag::class, 'added_by');
+    }
+
+    public function unpublishedGroceryList(): HasMany
+    {
+        return $this->groceryLists()->withAttributes(['is_public' => false]);
     }
 
     /**
