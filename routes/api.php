@@ -121,6 +121,21 @@ Route::prefix('/v1')->group(function () {
                 });
             });
 
+        Route::controller(GroceryListController::class)
+            ->missing(modelNotFound('Grocery list'))
+            ->name('grocery.')
+            ->group(function () {
+                Route::withoutMiddleware(['auth:sanctum'])->group(function () {
+                    // This route is used for accessing specific publicly available grocery list
+                    Route::get('/grocery-lists/{groceryList:slug}', 'show')->name('show');
+                });
+                // this is used to fetch the grocery lists of the authenticated user
+                Route::get('/grocery-lists', 'index');
+                Route::post('/grocery-lists', 'store');
+                Route::patch('/grocery-lists/{groceryList:slug}', 'update')->can('update', 'groceryList');
+                Route::delete('/grocery-lists/{groceryList:slug}', 'delete')->can('delete', 'groceryList');
+            });
+
         Route::missing(modelNotFound('User'))
             ->name('user.')
             ->scopeBindings()
@@ -129,17 +144,10 @@ Route::prefix('/v1')->group(function () {
                 Route::controller(GroceryListController::class)
                     ->name('grocery.')
                     ->group(function () {
-                        // NOTE: GET should be accessible to GUEST users
                         Route::withoutMiddleware(['auth:sanctum'])->group(function () {
-                            Route::get('/users/{user}/groceryLists', 'index');
-                            Route::get('/users/{user}/groceryLists/{groceryList:slug}', 'show')
-                                ->name('show')
-                                ->missing(modelNotFound('GroceryList'));
+                            // This route is used for visiting the user profile to see its public grocery lists
+                            Route::get('/users/{user:username}/grocery-lists', 'publicIndex');
                         });
-                        Route::post('/users/{user}/groceryLists', 'store');
-                        Route::patch('/users/{user}/groceryLists/{groceryList}', 'update')
-                            ->can('update', 'groceryList')
-                            ->missing(modelNotFound('GroceryList'));
                     });
             });
     });

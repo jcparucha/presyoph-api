@@ -23,6 +23,7 @@ class GroceryListResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'created_by' => $this->whenLoaded('user')?->username,
+            // TODO Add items
         ];
     }
 }

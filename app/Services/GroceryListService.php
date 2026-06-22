@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\GroceryList;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -24,11 +26,15 @@ class GroceryListService
     {
         return $user->load([
             'groceryLists' => function ($query) use ($published) {
-                if (is_null($published)) {
-                    return;
+                // if $published is null, do nothing
+                // this will load both private and public grocery list
+
+                if (! is_null($published)) {
+                    // load either private or public grocery liest
+                    $published ? $query->published() : $query->unpublished();
                 }
 
-                $published ? $query->published() : $query->unpublished();
+                $query->orderByDesc('created_at');
             },
             'groceryLists.user',
         ])->groceryLists;
@@ -36,7 +42,22 @@ class GroceryListService
 
     public function get(GroceryList $groceryList): GroceryList
     {
-        return $groceryList->load('user');
+        $groceryList->load('user');
+
+        // anyone can see the grocery list if it's public
+        if ($groceryList->is_public) {
+            return $groceryList;
+        }
+
+        $authUser = Auth::user();
+
+        // if the grocery list is private, check if it belongs to the auth user
+        if ($authUser && $authUser->id === $groceryList->created_by) {
+            return $groceryList;
+        }
+
+        // else, abort operation
+        abort(Response::HTTP_NOT_FOUND, 'Grocery list not found.');
     }
 
     public function create(array $data, User $user): GroceryList
