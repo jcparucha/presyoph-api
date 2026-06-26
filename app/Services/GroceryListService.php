@@ -57,7 +57,7 @@ class GroceryListService
         }
 
         // else, abort operation
-        abort(Response::HTTP_NOT_FOUND, 'Grocery list not found.');
+        abort(Response::HTTP_NOT_FOUND, __('common.not_found.grocery_list'));
     }
 
     public function create(array $data, User $user): GroceryList

@@ -237,7 +237,7 @@ class GetGroceryListTest extends TestCase
         // $auth is trying to access the $owner's private grocery list
         $response = $this->actingAs($auth)->getJson($this->url.'/'.$groceryList->slug);
 
-        $response->assertNotFound()->assertJson(['error' => 'Grocery list not found.']);
+        $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
     public function test_return_not_found_on_user_non_existing_grocery_list(): void
@@ -247,7 +247,7 @@ class GetGroceryListTest extends TestCase
 
         $response = $this->actingAs($user)->getJson($this->url.'/non-existing-slug');
 
-        $response->assertNotFound()->assertJson(['error' => 'Grocery list not found.']);
+        $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
     public function test_return_specific_user_public_grocery_lists(): void
