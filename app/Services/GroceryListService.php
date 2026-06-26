@@ -60,8 +60,10 @@ class GroceryListService
         abort(Response::HTTP_NOT_FOUND, __('common.not_found.grocery_list'));
     }
 
-    public function create(array $data, User $user): GroceryList
+    public function create(array $data): GroceryList
     {
+        $user = Auth::user();
+
         $this->validateMaxLimit($user);
 
         $groceryList = $user->unpublishedGroceryList()->firstOrCreate([
@@ -97,7 +99,7 @@ class GroceryListService
         $maxGroceryLists = $user->entitlement->max_grocery_lists;
 
         // check the user's grocery list, max of 3.
-        if ($user->groceryLists->count() >= $maxGroceryLists) {
+        if ($user->groceryLists()->count() >= $maxGroceryLists) {
             throw ValidationException::withMessages([
                 'system' => "Maximum grocery list limit reached. You can only create up to $maxGroceryLists.",
             ]);

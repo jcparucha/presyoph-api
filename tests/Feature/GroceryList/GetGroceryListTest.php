@@ -26,14 +26,14 @@ class GetGroceryListTest extends TestCase
         'created_by',
     ];
 
-    public function test_return_authentication_error_for_accessing_the_url(): void
+    public function test_return_401_authentication_error_for_accessing_the_url(): void
     {
         $response = $this->getJson($this->url);
 
         $response->assertUnauthorized()->assertJson(['error' => 'Unauthenticated.']);
     }
 
-    public function test_return_user_empty_grocery_lists(): void
+    public function test_return_200_ok_user_empty_grocery_lists(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -43,7 +43,7 @@ class GetGroceryListTest extends TestCase
         $response->assertOk()->assertExactJson(['data' => []]);
     }
 
-    public function test_return_user_all_grocery_lists(): void
+    public function test_return_200_ok_user_all_grocery_lists(): void
     {
         /** @var User $user */
         $user = User::factory()
@@ -63,7 +63,7 @@ class GetGroceryListTest extends TestCase
             ->assertJson(fn (AssertableJson $json) => $json->has('data', 4));
     }
 
-    public function test_return_user_unpublished_grocery_lists(): void
+    public function test_return_200_ok_user_unpublished_grocery_lists(): void
     {
         /** @var User $user */
         $user = User::factory()
@@ -89,7 +89,7 @@ class GetGroceryListTest extends TestCase
             );
     }
 
-    public function test_return_user_published_grocery_lists(): void
+    public function test_return_200_ok_user_published_grocery_lists(): void
     {
         /** @var User $user */
         $user = User::factory()
@@ -115,7 +115,7 @@ class GetGroceryListTest extends TestCase
             );
     }
 
-    public function test_return_validation_error_for_incorrect_published_value(): void
+    public function test_return_422_validation_error_for_incorrect_published_value(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -125,7 +125,7 @@ class GetGroceryListTest extends TestCase
         $response->assertUnprocessable()->assertJson(['message' => 'The published field must be true or false.']);
     }
 
-    public function test_return_user_private_or_public_grocery_list(): void
+    public function test_return_200_ok_user_private_or_public_grocery_list(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -179,7 +179,7 @@ class GetGroceryListTest extends TestCase
             ]);
     }
 
-    public function test_return_user_specific_public_grocery_list(): void
+    public function test_return_200_ok_user_specific_public_grocery_list(): void
     {
         /** @var User $auth */
         $auth = User::factory()->create();
@@ -222,7 +222,7 @@ class GetGroceryListTest extends TestCase
             ]);
     }
 
-    public function test_return_not_found_on_user_private_grocery_list(): void
+    public function test_return_404_not_found_on_user_private_grocery_list(): void
     {
         /** @var User $auth */
         $auth = User::factory()->create();
@@ -240,7 +240,7 @@ class GetGroceryListTest extends TestCase
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
-    public function test_return_not_found_on_user_non_existing_grocery_list(): void
+    public function test_return_404_not_found_on_user_non_existing_grocery_list(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -250,7 +250,7 @@ class GetGroceryListTest extends TestCase
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
-    public function test_return_specific_user_public_grocery_lists(): void
+    public function test_return_200_ok_specific_user_public_grocery_lists(): void
     {
         $url = '/api/v1/users/:username/grocery-lists';
 

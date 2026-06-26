@@ -38,12 +38,11 @@ class GroceryListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreGroceryListRequest $request, User $user): JsonResponse
+    public function store(StoreGroceryListRequest $request): JsonResponse
     {
-        $newGroceryList = $this->groceryListService->create($request->validated(), $user);
+        $newGroceryList = $this->groceryListService->create($request->validated());
 
-        $newResourceLink = route('user.grocery.show', [
-            'user' => $user->id,
+        $newResourceLink = route('grocery.show', [
             'groceryList' => $newGroceryList->slug,
         ]);
 
@@ -66,7 +65,7 @@ class GroceryListController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateGroceryListRequest $request, User $user, GroceryList $groceryList): JsonResource
+    public function update(UpdateGroceryListRequest $request, GroceryList $groceryList): JsonResource
     {
         return $this->groceryListService->update($request->validated(), $groceryList)->toResource();
     }

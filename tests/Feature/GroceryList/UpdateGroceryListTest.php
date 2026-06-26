@@ -14,14 +14,14 @@ class UpdateGroceryListTest extends TestCase
 
     private $url = '/api/v1/grocery-lists';
 
-    public function test_return_authentication_error_for_accessing_the_url(): void
+    public function test_return_401_authentication_error_for_accessing_the_url(): void
     {
         $response = $this->patchJson($this->url.'/fake-slug');
 
         $response->assertUnauthorized()->assertJson(['error' => 'Unauthenticated.']);
     }
 
-    public function test_return_not_found_on_non_existing_grocery_list(): void
+    public function test_return_404_not_found_on_non_existing_grocery_list(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -35,7 +35,7 @@ class UpdateGroceryListTest extends TestCase
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
-    public function test_return_validation_error_for_payload_min_max_characters(): void
+    public function test_return_422_validation_error_for_payload_min_max_characters(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -61,8 +61,7 @@ class UpdateGroceryListTest extends TestCase
         $response2->assertUnprocessable()->assertJsonValidationErrors($keysWithErrors, 'errors');
     }
 
-    // TODO continue testing
-    public function test_return_validation_error_payload_unsupported_special_characters(): void
+    public function test_return_422_validation_error_payload_unsupported_special_characters(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -78,7 +77,7 @@ class UpdateGroceryListTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrors(['name', 'description'], 'errors');
     }
 
-    public function test_return_validation_error_payload_must_be_a_string(): void
+    public function test_return_422_validation_error_payload_must_be_a_string(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -94,7 +93,7 @@ class UpdateGroceryListTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrors(['name', 'description'], 'errors');
     }
 
-    public function test_return_ok_when_successfully_updating_grocery_list(): void
+    public function test_return_200_ok_when_successfully_updating_grocery_list(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
@@ -120,7 +119,7 @@ class UpdateGroceryListTest extends TestCase
         $this->assertAuthenticated('web');
     }
 
-    public function test_return_not_found_when_updating_grocery_list_by_unauthorize_user(): void
+    public function test_return_404_not_found_when_updating_grocery_list_by_unauthorize_user(): void
     {
         /** @var User $auth */
         $auth = User::factory()->create();

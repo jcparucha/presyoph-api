@@ -126,7 +126,7 @@ Route::prefix('/v1')->group(function () {
             ->name('grocery.')
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
-                    // This route is used for accessing specific publicly available grocery list
+                    // This route is used for accessing specific private or public grocery list
                     Route::get('/grocery-lists/{groceryList:slug}', 'show')->name('show');
                 });
                 // this is used to fetch the grocery lists of the authenticated user
