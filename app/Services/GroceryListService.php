@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -92,6 +93,16 @@ class GroceryListService
         }
 
         return $groceryList->load('user');
+    }
+
+    public function delete(GroceryList $groceryList): void
+    {
+        DB::transaction(function () use ($groceryList) {
+            // TODO delete first the items
+
+            // then delete the grocery list
+            $groceryList->delete();
+        });
     }
 
     private function validateMaxLimit(User $user)

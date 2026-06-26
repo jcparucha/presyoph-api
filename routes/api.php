@@ -133,7 +133,7 @@ Route::prefix('/v1')->group(function () {
                 Route::get('/grocery-lists', 'index');
                 Route::post('/grocery-lists', 'store');
                 Route::patch('/grocery-lists/{groceryList:slug}', 'update')->can('update', 'groceryList');
-                Route::delete('/grocery-lists/{groceryList:slug}', 'delete')->can('delete', 'groceryList');
+                Route::delete('/grocery-lists/{groceryList:slug}', 'destroy')->can('delete', 'groceryList');
             });
 
         Route::missing(modelNotFound('User'))

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\GroceryListService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 
 class GroceryListController extends Controller
 {
@@ -73,8 +74,10 @@ class GroceryListController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(GroceryList $groceryList): Response
     {
-        //
+        $this->groceryListService->delete($groceryList);
+
+        return response()->noContent();
     }
 }
