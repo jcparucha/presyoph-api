@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\StoreType;
+namespace Tests\Feature\V1\StoreTypes;
 
 use App\Models\StoreType;
 use Database\Seeders\StoreTypeSeeder;

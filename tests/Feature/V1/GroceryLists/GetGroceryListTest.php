@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\GroceryList;
+namespace Tests\Feature\V1\GroceryLists;
 
 use App\Models\GroceryList;
 use App\Models\User;
