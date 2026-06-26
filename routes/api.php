@@ -112,12 +112,12 @@ Route::prefix('/v1')->group(function () {
             });
 
         Route::controller(StoreTypeController::class)
-            ->missing(modelNotFound('StoreType'))
+            ->missing(modelNotFound('Store type'))
             ->name('storetype.')
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
-                    Route::get('/store_types', 'index');
-                    Route::get('/store_types/{storeType}', 'show')->name('show');
+                    Route::get('/store-types', 'index');
+                    Route::get('/store-types/{storeType}', 'show')->name('show');
                 });
             });
 
