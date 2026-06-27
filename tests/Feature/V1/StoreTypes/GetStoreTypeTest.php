@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\StoreType;
+namespace Tests\Feature\V1\StoreTypes;
 
 use App\Models\StoreType;
 use Database\Seeders\StoreTypeSeeder;
@@ -11,13 +11,13 @@ class GetStoreTypeTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $url = '/api/v1/store_types';
+    private $url = '/api/v1/store-types';
 
     public function test_return_empty_list_when_no_store_types_records(): void
     {
         $response = $this->getJson($this->url);
 
-        $response->assertStatus(200)->assertJson(['data' => []]);
+        $response->assertOk()->assertJson(['data' => []]);
     }
 
     public function test_return_seeded_store_types(): void
@@ -26,10 +26,10 @@ class GetStoreTypeTest extends TestCase
         $this->seed(StoreTypeSeeder::class);
 
         // Act by sending Http request
-        $response = $this->getJson('/api/v1/store_types');
+        $response = $this->getJson($this->url);
 
         // Assert
-        $response->assertStatus(200)->assertJsonStructure([
+        $response->assertOk()->assertJsonStructure([
             'data' => [['id', 'name', 'slug']],
         ]);
     }

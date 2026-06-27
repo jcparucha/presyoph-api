@@ -1,52 +1,47 @@
 <?php
 
-namespace Tests\Feature\GroceryList;
+namespace Tests\Feature\V1\GroceryLists;
 
 use App\Models\GroceryList;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
-class PatchGroceryListTest extends TestCase
+class UpdateGroceryListTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $url = '/api/v1/users/:id/groceryLists';
+    private $url = '/api/v1/grocery-lists';
 
-    public function test_return_401_unauthorized_when_user_is_not_authenticated(): void
+    public function test_return_401_authentication_error_for_accessing_the_url(): void
     {
-        $user = User::factory()->create();
-        $url = Str::replace(':id', $user->id, $this->url);
+        $response = $this->patchJson($this->url.'/fake-slug');
 
-        $response = $this->patchJson($url.'/1');
-
-        $response->assertUnauthorized()->assertJson(['message' => 'Unauthenticated.']);
+        $response->assertUnauthorized()->assertJson(['error' => 'Unauthenticated.']);
     }
 
-    public function test_return_404_not_found_when_grocery_list_does_not_exists(): void
+    public function test_return_404_not_found_on_non_existing_grocery_list(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $url = Str::replace(':id', $user->id, $this->url);
 
-        // no Grocery List with an ID of 1...
-        $response = $this->actingAs($user)->patchJson($url.'/1', [
+        // no Grocery List on this slug
+        $response = $this->actingAs($user)->patchJson($this->url.'/non-existing-slug', [
             'name' => 'Test Name',
             'description' => 'Test Description',
         ]);
 
-        $response->assertNotFound()->assertJson(['error' => 'GroceryList not found.']);
+        $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
     }
 
-    public function test_return_validation_error_payload_min_max_characters(): void
+    public function test_return_422_validation_error_for_payload_min_max_characters(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
         $user->defaultMaxGroceryLists()->create();
         $groceryList = GroceryList::factory()->count(1)->for($user)->create();
-        $url = Str::replace(':id', $user->id, $this->url).'/'.$groceryList->first()->id;
+        $url = $this->url.'/'.$groceryList->first()->slug;
         $keysWithErrors = ['name', 'description'];
 
         // Assert min characters is 3
@@ -66,13 +61,13 @@ class PatchGroceryListTest extends TestCase
         $response2->assertUnprocessable()->assertJsonValidationErrors($keysWithErrors, 'errors');
     }
 
-    public function test_return_validation_error_payload_unsupported_special_characters(): void
+    public function test_return_422_validation_error_payload_unsupported_special_characters(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
         $user->defaultMaxGroceryLists()->create();
         $groceryList = GroceryList::factory()->count(1)->for($user)->create();
-        $url = Str::replace(':id', $user->id, $this->url).'/'.$groceryList->first()->id;
+        $url = $this->url.'/'.$groceryList->first()->slug;
 
         $response = $this->actingAs($user, 'web')->patchJson($url, [
             'name' => 'Test ^_^',
@@ -82,13 +77,13 @@ class PatchGroceryListTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrors(['name', 'description'], 'errors');
     }
 
-    public function test_return_validation_error_payload_must_be_a_string(): void
+    public function test_return_422_validation_error_payload_must_be_a_string(): void
     {
         /** @var User $user */
         $user = User::factory()->create();
         $user->defaultMaxGroceryLists()->create();
         $groceryList = GroceryList::factory()->count(1)->for($user)->create();
-        $url = Str::replace(':id', $user->id, $this->url).'/'.$groceryList->first()->id;
+        $url = $this->url.'/'.$groceryList->first()->slug;
 
         $response = $this->actingAs($user, 'web')->patchJson($url, [
             'name' => ['test'],
@@ -104,7 +99,7 @@ class PatchGroceryListTest extends TestCase
         $user = User::factory()->create();
         $user->defaultMaxGroceryLists()->create();
         $groceryList = GroceryList::factory()->count(1)->for($user)->create();
-        $url = Str::replace(':id', $user->id, $this->url).'/'.$groceryList->first()->id;
+        $url = $this->url.'/'.$groceryList->first()->slug;
         $newData = ['name' => 'New Grocery List', 'description' => 'New Grocery List Description'];
 
         $response = $this->actingAs($user, 'web')->patchJson($url, $newData);
@@ -126,22 +121,22 @@ class PatchGroceryListTest extends TestCase
 
     public function test_return_404_not_found_when_updating_grocery_list_by_unauthorize_user(): void
     {
-        /** @var User $user */
-        $user = User::factory()->create();
+        /** @var User $auth */
+        $auth = User::factory()->create();
         $owner = User::factory()->create();
         $owner->defaultMaxGroceryLists()->create();
         $groceryList = GroceryList::factory()->count(1)->for($owner)->create();
 
-        $url = Str::replace(':id', $user->id, $this->url).'/'.$groceryList->first()->id;
+        $url = $this->url.'/'.$groceryList->first()->slug;
 
         $newData = ['name' => 'New Grocery List', 'description' => 'New Grocery List Description'];
 
-        // $user is not the owner of the post, but trying to update it.
-        $response = $this->actingAs($user, 'web')->patchJson($url, [
+        // $auth is not the owner of the grocery list, but still trying to update it.
+        $response = $this->actingAs($auth, 'web')->patchJson($url, [
             'name' => $newData,
         ]);
 
-        $response->assertNotFound()->assertJson(['error' => 'GroceryList not found.']);
+        $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);
 
         $this->assertAuthenticated('web');
     }

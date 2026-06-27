@@ -23,6 +23,16 @@ class GroceryListPolicy
     {
         return $user->id === $groceryList->created_by && ! is_null($groceryList->created_by)
             ? Response::allow()
-            : Response::denyAsNotFound();
+            : Response::denyAsNotFound(__('common.not_found.grocery_list'));
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, GroceryList $groceryList): Response
+    {
+        return $user->id === $groceryList->created_by && ! is_null($groceryList->created_by)
+            ? Response::allow()
+            : Response::denyAsNotFound(__('common.not_found.grocery_list'));
     }
 }
