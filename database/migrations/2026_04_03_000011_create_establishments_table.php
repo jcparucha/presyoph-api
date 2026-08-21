@@ -20,16 +20,16 @@ return new class extends Migration
 
             $table->id();
             $table->string('name', length: 100)->fulltext();
-            $table
-                ->foreignIdFor(Barangay::class, 'barangay_code')
-                ->constrained();
+            $table->foreignIdFor(Barangay::class, 'barangay_code')->constrained();
             $table->foreignIdFor(StoreType::class)->constrained();
             $table->foreignIdFor(User::class, 'added_by')->constrained();
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(['barangay_code', 'store_type_id', 'added_by']);
             $table->unique(['name', 'barangay_code']);
+
+            // for `WHERE store_type_id AND barangay_code`
+            $table->index(['store_type_id', 'barangay_code']);
         });
     }
 

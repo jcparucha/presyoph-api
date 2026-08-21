@@ -27,7 +27,10 @@ return new class extends Migration
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(['grocery_list_id', 'product_price_id']);
+            // for `WHERE grocery_list_id ORDER BY created_at`
+            $table->index(['grocery_list_id', 'created_at']);
+            // for `WHERE grocery_list_id AND is_done ORDER BY created_at`
+            $table->index(['grocery_list_id', 'is_done', 'created_at']);
         });
     }
 

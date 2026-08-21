@@ -25,8 +25,11 @@ return new class extends Migration
             $table->timestamps(precision: 3);
             $table->softDeletes('deleted_at', precision: 3);
 
-            $table->index(['created_by']);
             $table->fullText(['name', 'description']);
+            // index for `WHERE created_by AND is_public`
+            $table->index(['created_by', 'is_public']);
+            // index for `WHERE created_by AND is_public ORDER BY created_at`
+            $table->index(['created_by', 'is_public', 'created_at']);
         });
     }
 

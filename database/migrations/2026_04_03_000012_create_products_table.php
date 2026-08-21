@@ -29,7 +29,6 @@ return new class extends Migration
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(['unit_id', 'brand_id', 'category_id', 'added_by']);
             $table->unique(['brand_id', 'name', 'weight', 'unit_id']);
         });
     }
