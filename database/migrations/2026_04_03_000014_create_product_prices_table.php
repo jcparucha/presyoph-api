@@ -26,7 +26,10 @@ return new class extends Migration
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(['added_by', 'product_id', 'establishment_id']);
+            // for `WHERE product_id ORDER BY created_at`
+            $table->index(['product_id', 'created_at']);
+            // for `WHERE product_id AND establishment_id ORDER BY created_at`
+            $table->index(['product_id', 'establishment_id', 'created_at']);
         });
     }
 

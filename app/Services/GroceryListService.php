@@ -29,7 +29,6 @@ class GroceryListService
             'groceryLists' => function ($query) use ($published) {
                 // if $published is null, do nothing
                 // this will load both private and public grocery list
-
                 if (! is_null($published)) {
                     // load either private or public grocery liest
                     $published ? $query->published() : $query->unpublished();

@@ -21,6 +21,9 @@ return new class extends Migration
             $table->boolean('is_test_account')->default(0);
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
+
+            // for `WHERE is_test_account`
+            $table->index(['is_test_account']);
         });
     }
 

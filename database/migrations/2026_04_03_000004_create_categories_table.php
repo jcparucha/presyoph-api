@@ -24,7 +24,6 @@ return new class extends Migration
             $table->timestamps(precision: 3);
             $table->softdeletes('deleted_at', precision: 3);
 
-            $table->index(['added_by']);
             $table->unique(['name', 'slug']);
         });
     }
