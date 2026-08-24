@@ -12,8 +12,8 @@ enum CredentialStatus
     {
         return match ($this) {
             self::VALID => 'Authentication successful.',
-            self::INVALID => __('auth.password'),
-            self::NON_EXISTENT => __('auth.failed'),
+            self::INVALID => __('auth.invalid'),
+            self::NON_EXISTENT => __('auth.non_existent'),
         };
     }
 }

@@ -15,37 +15,20 @@ class AuthController extends Controller
 
     public function register(RegisterUserRequest $request): JsonResponse
     {
-        $this->authService->register($request->validated());
+        if ($this->authService->register($request->validated())) {
+            return response()->json(['message' => __('auth.register_success')]);
+        }
 
-        return response()->json(['message' => 'success']);
+        return response()->json(['message' => __('auth.register_fail')], 500);
     }
 
     public function login(LoginUserRequest $request): JsonResponse
     {
         if ($request->user()) {
-            return response()->json([
-                'message' => "You're already authenticated.",
-            ]);
+            return response()->json(['message' => __('auth.is_auth')]);
         }
 
-        $status = $this->authService->login($request->all());
-
-        $statusCode = 200;
-        $data['messages'] = CredentialStatus::VALID->message();
-
-        if ($status !== CredentialStatus::VALID->name) {
-            $statusCode = 422;
-
-            $data['messages'] =
-                $status === CredentialStatus::INVALID->name
-                    ? CredentialStatus::INVALID->message()
-                    : CredentialStatus::NON_EXISTENT->message();
-
-            $data['errors']['system'][] =
-                $status === CredentialStatus::INVALID->name
-                    ? CredentialStatus::INVALID->message()
-                    : CredentialStatus::NON_EXISTENT->message();
-        }
+        [$data, $statusCode] = $this->_generateLoginResponse($this->authService->login($request->all()));
 
         return response()->json($data, $statusCode);
     }
@@ -55,5 +38,24 @@ class AuthController extends Controller
         $this->authService->logout();
 
         return response()->json(['message' => 'success']);
+    }
+
+    private function _generateLoginResponse(string $status): array
+    {
+        $statusCode = 200;
+        $data['messages'] = CredentialStatus::VALID->message();
+
+        if ($status !== CredentialStatus::VALID->name) {
+            $statusCode = 422;
+            $message =
+                $status === CredentialStatus::INVALID->name
+                    ? CredentialStatus::INVALID->message()
+                    : CredentialStatus::NON_EXISTENT->message();
+
+            $data['messages'] = $message;
+            $data['errors']['system'][] = $message;
+        }
+
+        return [$data, $statusCode];
     }
 }

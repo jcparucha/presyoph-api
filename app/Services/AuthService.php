@@ -4,31 +4,20 @@ namespace App\Services;
 
 use App\Contracts\AuthServiceInterface;
 use App\Enums\CredentialStatus;
-use App\Models\User;
+use App\Facades\Actions\RegisterUser;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthService implements AuthServiceInterface
 {
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(private UserRepository $userRepo) {}
 
     public function register(array $data): bool
     {
-        $newUser = User::realUser()->create([
-            'username' => $data['username'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        // add default entitlement
-        $newUser->defaultMaxGroceryLists()->create();
-
-        return ! is_null($newUser);
+        return ! is_null(RegisterUser::handle($data));
     }
 
     public function login(array $credentials): string
@@ -39,9 +28,9 @@ class AuthService implements AuthServiceInterface
             return CredentialStatus::VALID->name;
         }
 
-        $user = User::where('username', $credentials['username'])->first();
-
-        return ! is_null($user) ? CredentialStatus::INVALID->name : CredentialStatus::NON_EXISTENT->name;
+        return ! is_null($this->userRepo->getByUsername($credentials['username']))
+            ? CredentialStatus::INVALID->name
+            : CredentialStatus::NON_EXISTENT->name;
     }
 
     public function logout(): void
