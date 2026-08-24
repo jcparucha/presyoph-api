@@ -5,21 +5,22 @@ namespace App\Http\Controllers\V1;
 use App\Contracts\AuthServiceInterface;
 use App\Enums\CredentialStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AuthRequest;
+use App\Http\Requests\Auth\LoginUserRequest;
+use App\Http\Requests\Auth\RegisterUserRequest;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
     public function __construct(private AuthServiceInterface $authService) {}
 
-    public function register(AuthRequest $request): JsonResponse
+    public function register(RegisterUserRequest $request): JsonResponse
     {
         $this->authService->register($request->validated());
 
         return response()->json(['message' => 'success']);
     }
 
-    public function login(AuthRequest $request): JsonResponse
+    public function login(LoginUserRequest $request): JsonResponse
     {
         if ($request->user()) {
             return response()->json([
