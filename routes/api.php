@@ -81,7 +81,7 @@ Route::prefix('/v1')->group(function () {
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/brands', 'index');
-                    Route::get('/brands/{brand}', 'show')->name('show');
+                    Route::get('/brands/{brand:slug}', 'show')->name('show');
                 });
                 Route::post('/brands', 'store');
                 Route::patch('/brands/{brand}', 'update')->can('update', 'brand');

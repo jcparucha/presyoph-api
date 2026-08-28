@@ -19,7 +19,7 @@ class FirstOrCreateBrandAction
         try {
             return $this->brandRepo->firstOrCreate($this->userRepo->getAuthUser(), $name);
         } catch (\Exception $e) {
-            Log::error(__CLASS__ . ': ' . $e->getMessage());
+            Log::error(__CLASS__.': '.$e->getMessage());
 
             // TODO: Should throw exception error
             return null;

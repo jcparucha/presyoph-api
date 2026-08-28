@@ -18,7 +18,7 @@ class UpdateBrandNameAction
         try {
             return $this->brandRepo->update($brand, $name);
         } catch (\Exception $e) {
-            Log::error(__CLASS__ . ': ' . $e->getMessage());
+            Log::error(__CLASS__.': '.$e->getMessage());
 
             // TODO: Should throw exception error
             return null;
