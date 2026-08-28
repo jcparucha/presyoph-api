@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Actions\Brand\FirstOrCreateBrandAction;
+use App\Actions\Brand\UpdateBrandNameAction;
 use App\Models\Brand;
+use App\Repositories\UserRepository;
 use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -14,36 +17,33 @@ class BrandService
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        private UserRepository $userRepo,
+        private UpdateBrandNameAction $updateBrandNameAction,
+        private FirstOrCreateBrandAction $firstOrCreateBrandAction,
+    ) {}
 
     public function all(?int $perPage = 20): LengthAwarePaginator
     {
         return Brand::paginate($perPage, ['*'], 'page');
     }
 
-    public function show(Brand $brand): Brand
-    {
-        return $brand;
-    }
-
     public function create(array $data): Brand
     {
-        return $this->firstOrCreate($data);
+        $this->assertShouldHaveKeys(['name'], $data);
+
+        return $this->firstOrCreateBrandAction->handle($data['name']);
     }
 
-    public function update(array $inputs, Brand $brand): Brand
+    public function update(Brand $brand, array $inputs): Brand
     {
-        $brand->name = $inputs['name'];
-        $brand->slug = generate_unique_slug($inputs['name']);
-        $brand->save();
+        $this->updateBrandNameAction->handle($brand, $inputs['name']);
 
         return $brand->refresh();
     }
 
     /**
+     * TODO - Deprecate
      * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): Brand

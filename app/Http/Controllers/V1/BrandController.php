@@ -21,9 +21,7 @@ class BrandController extends Controller
      */
     public function index(PaginationRequest $request): JsonResource
     {
-        return BrandResource::collection(
-            $this->brandService->all($request->per_page),
-        );
+        return BrandResource::collection($this->brandService->all($request->per_page));
     }
 
     /**
@@ -50,19 +48,15 @@ class BrandController extends Controller
      */
     public function show(Brand $brand): JsonResource
     {
-        return $this->brandService->show($brand)->toResource();
+        return $brand->toResource();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(
-        UpdateBrandRequest $request,
-        Brand $brand,
-    ): JsonResource {
-        return $this->brandService
-            ->update($request->validated(), $brand)
-            ->toResource();
+    public function update(UpdateBrandRequest $request, Brand $brand): JsonResource
+    {
+        return $this->brandService->update($brand, $request->validated())->toResource();
     }
 
     /**

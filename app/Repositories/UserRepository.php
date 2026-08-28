@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository
@@ -11,6 +12,10 @@ class UserRepository
      * Create a new class instance.
      */
     public function __construct() {}
+
+    /************
+     * MUTATORS *
+     ************/
 
     /**
      * @param  array  $credentials  = [username, password]
@@ -23,10 +28,23 @@ class UserRepository
         ]);
     }
 
+    /***********
+     * GETTERS *
+     ***********/
+
+    public function getAuthUser(): User
+    {
+        return Auth::guard('web')->user();
+    }
+
     public function getByUsername(string $username): ?User
     {
         return User::where('username', $username)->first();
     }
+
+    /***********
+     * SETTERS *
+     ***********/
 
     public function setDefaultEntitlements(User $user): void
     {
