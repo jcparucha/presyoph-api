@@ -32,7 +32,7 @@ class BrandController extends Controller
         $newBrand = $this->brandService->create($request->validated());
 
         $newResourceLink = route('brand.show', [
-            'brand' => $newBrand->id,
+            'brand' => $newBrand->slug,
         ]);
 
         return $newBrand
