@@ -84,7 +84,7 @@ Route::prefix('/v1')->group(function () {
                     Route::get('/brands/{brand:slug}', 'show')->name('show');
                 });
                 Route::post('/brands', 'store');
-                Route::patch('/brands/{brand}', 'update')->can('update', 'brand');
+                Route::patch('/brands/{brand:slug}', 'update')->can('update', 'brand');
             });
 
         Route::controller(CategoryController::class)

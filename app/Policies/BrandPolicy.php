@@ -23,6 +23,6 @@ class BrandPolicy
     {
         return $user->id === $brand->added_by && ! is_null($brand->added_by)
             ? Response::allow()
-            : Response::denyAsNotFound();
+            : Response::denyAsNotFound(__('common.not_found.brand'));
     }
 }

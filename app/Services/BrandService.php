@@ -25,7 +25,7 @@ class BrandService
 
     public function all(?int $perPage = 20): LengthAwarePaginator
     {
-        return Brand::paginate($perPage, ['*'], 'page');
+        return Brand::paginate($perPage, ['*'], 'page', null, null);
     }
 
     public function create(array $data): Brand

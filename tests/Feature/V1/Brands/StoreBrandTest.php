@@ -13,8 +13,6 @@ class StoreBrandTest extends TestCase
 
     private $url = '/api/v1/brands';
 
-    private $dataStructure = ['id', 'name', 'slug'];
-
     public function test_return_401_when_user_is_not_authenticated(): void
     {
         $data = ['name' => 'New Brand'];

@@ -10,5 +10,8 @@ return [
     |
     */
 
-    'not_found' => ['grocery_list' => 'Grocery list not found.'],
+    'not_found' => [
+        'brand' => 'Brand not found.',
+        'grocery_list' => 'Grocery list not found.',
+    ],
 ];
