@@ -120,5 +120,7 @@ class UpdateBrandTest extends TestCase
                         ->whereType('slug', 'string'),
                 ),
             );
+
+        $this->assertDatabaseHas('brands', $data);
     }
 }

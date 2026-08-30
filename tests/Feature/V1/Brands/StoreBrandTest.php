@@ -81,6 +81,8 @@ class StoreBrandTest extends TestCase
                             ->whereType('slug', 'string'),
                     ),
             );
+
+        $this->assertDatabaseHas('brands', $data);
     }
 
     public function test_return_200_ok_on_idempotent_post(): void
@@ -132,5 +134,7 @@ class StoreBrandTest extends TestCase
                             ->etc(),
                     ),
             );
+
+        $this->assertDatabaseHas('brands', $data);
     }
 }
