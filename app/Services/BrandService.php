@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Actions\Brand\FirstOrCreateBrandAction;
 use App\Actions\Brand\UpdateBrandNameAction;
 use App\Models\Brand;
-use App\Repositories\UserRepository;
 use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +17,6 @@ class BrandService
      * Create a new class instance.
      */
     public function __construct(
-        private UserRepository $userRepo,
         private UpdateBrandNameAction $updateBrandNameAction,
         private FirstOrCreateBrandAction $firstOrCreateBrandAction,
     ) {}
@@ -30,9 +28,7 @@ class BrandService
 
     public function create(array $data): Brand
     {
-        $this->assertShouldHaveKeys(['name'], $data);
-
-        return $this->firstOrCreateBrandAction->handle($data['name']);
+        return $this->firstOrCreateBrandAction->handle($data);
     }
 
     public function update(Brand $brand, array $inputs): Brand
