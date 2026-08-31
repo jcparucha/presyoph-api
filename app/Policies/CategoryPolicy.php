@@ -15,6 +15,6 @@ class CategoryPolicy
     {
         return $user->id === $category->added_by && ! is_null($category->added_by)
             ? Response::allow()
-            : Response::denyAsNotFound();
+            : Response::denyAsNotFound(__('common.not_found.category'));
     }
 }

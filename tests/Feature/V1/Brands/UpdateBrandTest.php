@@ -92,7 +92,7 @@ class UpdateBrandTest extends TestCase
         $brand = Brand::factory()->for($owner)->create()->first();
         $resourceURI = $this->url.$brand->slug;
 
-        // $auth is not the owner of the grocery list, but still trying to update it.
+        // $auth is not the owner of the brand, but still trying to update it.
         $response = $this->actingAs($auth, 'web')->patchJson($resourceURI, ['name' => 'New Brand']);
 
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.brand')]);
