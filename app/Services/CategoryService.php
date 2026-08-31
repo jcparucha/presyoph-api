@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Actions\Category\FirstOrCreateCategoryAction;
+use App\Actions\Category\UpdateCategoryAction;
 use App\Models\Category;
 use App\Traits\AssertionTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class CategoryService
 {
@@ -17,47 +18,30 @@ class CategoryService
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        private FirstOrCreateCategoryAction $firstOrCreateCategoryAction,
+        private UpdateCategoryAction $updateCategoryAction,
+    ) {}
 
     public function all(?int $perPage = 20): LengthAwarePaginator
     {
-        return Category::with('user')->paginate($perPage, ['*'], 'page');
-    }
-
-    public function show(Category $category): Category
-    {
-        return $category->load('user');
+        return Category::paginate($perPage, ['*'], 'page', null, null);
     }
 
     public function create(array $data): Category
     {
-        return $this->firstOrCreate($data);
+        return $this->firstOrCreateCategoryAction->handle($data);
     }
 
-    public function update(array $inputs, Category $category): Category
+    public function update(array $data, Category $category): Category
     {
-        foreach ($this->fields as $field) {
-            if (isset($inputs[$field]) && $inputs[$field] !== $category->$field) {
-                // update slug first if name was changed
-                if ($field === 'name' && Str::lower($category->$field) !== Str::lower($inputs[$field])) {
-                    $category->slug = generate_unique_slug($inputs[$field]);
-                }
+        $this->updateCategoryAction->handle($category, $data);
 
-                $category->$field = $inputs[$field];
-            }
-        }
-
-        if ($category->isDirty()) {
-            $category->save();
-        }
-
-        return $category;
+        return $category->refresh();
     }
 
     /**
+     * TODO - Deprecate
      * Return the existing record or create a new one
      */
     public function firstOrCreate(array $data): Category

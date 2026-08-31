@@ -21,9 +21,7 @@ class CategoryController extends Controller
      */
     public function index(PaginationRequest $request): JsonResource
     {
-        return CategoryResource::collection(
-            $this->categoryService->all($request->per_page),
-        );
+        return CategoryResource::collection($this->categoryService->all($request->per_page));
     }
 
     /**
@@ -34,7 +32,7 @@ class CategoryController extends Controller
         $newCategory = $this->categoryService->create($request->validated());
 
         $newResourceLink = route('category.show', [
-            'category' => $newCategory->id,
+            'category' => $newCategory->slug,
         ]);
 
         return $newCategory
@@ -50,19 +48,15 @@ class CategoryController extends Controller
      */
     public function show(Category $category): JsonResource
     {
-        return $this->categoryService->show($category)->toResource();
+        return $category->toResource();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(
-        UpdateCategoryRequest $request,
-        Category $category,
-    ): JsonResource {
-        return $this->categoryService
-            ->update($request->validated(), $category)
-            ->toResource();
+    public function update(UpdateCategoryRequest $request, Category $category): JsonResource
+    {
+        return $this->categoryService->update($request->validated(), $category)->toResource();
     }
 
     /**

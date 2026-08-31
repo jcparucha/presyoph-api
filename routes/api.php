@@ -93,10 +93,10 @@ Route::prefix('/v1')->group(function () {
             ->group(function () {
                 Route::withoutMiddleware(['auth:sanctum'])->group(function () {
                     Route::get('/categories', 'index');
-                    Route::get('/categories/{category}', 'show')->name('show');
+                    Route::get('/categories/{category:slug}', 'show')->name('show');
                 });
                 Route::post('/categories', 'store');
-                Route::patch('/categories/{category}', 'update')->can('update', 'category');
+                Route::patch('/categories/{category:slug}', 'update')->can('update', 'category');
             });
 
         Route::controller(EstablishmentController::class)
