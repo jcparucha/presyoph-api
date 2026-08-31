@@ -22,21 +22,16 @@ class CategoryRepository
 
     public function update(Category $category, array $data): Category
     {
-        foreach (['name', 'description'] as $field) {
-            if (isset($data[$field]) && $data[$field] !== $category->$field) {
-                // update slug first if name was changed.
-                // TODO - moved to observer for Updating and Creating
-                if ($field === 'name' && Str::lower($category->$field) !== Str::lower($data[$field])) {
-                    $category->slug = generate_unique_slug($data[$field]);
-                }
+        $category->fill($data);
 
-                $category->$field = $data[$field];
-            }
+        // if changes on name has changed, update the slug
+        // TODO - move to observer for Updating and Creating
+        if ($category->isDirty('name') && Str::lower($category->name) !== Str::lower($data['name'])) {
+            $category->slug = generate_unique_slug($data['name']);
         }
 
-        if ($category->isDirty()) {
-            $category->save();
-        }
+        // `save()` already handles the dirty check
+        $category->save();
 
         return $category;
     }
