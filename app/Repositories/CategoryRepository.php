@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CategoryRepository
@@ -16,16 +15,9 @@ class CategoryRepository
 
     public function firstOrCreate(User $user, array $data): ?Category
     {
-        try {
-            return $user
-                ->categories()
-                ->firstOrCreate(['name' => $data['name']], ['description' => $data['description'] ?? null]);
-        } catch (\Exception $e) {
-            Log::error(__CLASS__ . ': ' . $e->getMessage());
-
-            // TODO: Should throw exception error
-            return null;
-        }
+        return $user
+            ->categories()
+            ->firstOrCreate(['name' => $data['name']], ['description' => $data['description'] ?? null]);
     }
 
     public function update(Category $category, array $data): Category

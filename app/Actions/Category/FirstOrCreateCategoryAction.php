@@ -24,7 +24,7 @@ class FirstOrCreateCategoryAction
 
             return $this->categoryRepo->firstOrCreate($this->userRepo->getAuthUser(), $data);
         } catch (\Exception $e) {
-            Log::error(__CLASS__ . ': ' . $e->getMessage());
+            Log::error(__CLASS__.': '.$e->getMessage());
 
             // TODO: Should throw exception error
             return null;
