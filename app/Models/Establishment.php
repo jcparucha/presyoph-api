@@ -12,12 +12,7 @@ class Establishment extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'barangay_code',
-        'store_type_id',
-        'added_by',
-    ];
+    protected $fillable = ['name', 'barangay_code', 'store_type_id', 'added_by'];
 
     public function productPrices(): HasMany
     {
@@ -41,18 +36,12 @@ class Establishment extends Model
 
     public function scopeInRegion(Builder $query, string $code): void
     {
-        $query->whereHas(
-            'barangay.munCity.province.region',
-            $this->_whereHasCallback($code),
-        );
+        $query->whereHas('barangay.munCity.province.region', $this->_whereHasCallback($code));
     }
 
     public function scopeInProvince(Builder $query, string $code): void
     {
-        $query->whereHas(
-            'barangay.munCity.province',
-            $this->_whereHasCallback($code),
-        );
+        $query->whereHas('barangay.munCity.province', $this->_whereHasCallback($code));
     }
 
     public function scopeInMunCity(Builder $query, string $code): void
@@ -60,12 +49,12 @@ class Establishment extends Model
         $query->whereHas('barangay.munCity', $this->_whereHasCallback($code));
     }
 
-    public function scopeInBarangay($query, string $code): void
+    public function scopeInBarangay(Builder $query, string $code): void
     {
         $query->where('barangay_code', $code);
     }
 
-    public function scopeOfStoreType($query, int $storeTypeId): void
+    public function scopeOfStoreType(Builder $query, int $storeTypeId): void
     {
         $query->where('store_type_id', $storeTypeId);
     }

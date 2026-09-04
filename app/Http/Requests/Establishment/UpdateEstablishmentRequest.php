@@ -46,7 +46,7 @@ class UpdateEstablishmentRequest extends EstablishmentRequest
     public function messages(): array
     {
         $name = $this->getName();
-        $barangay = Barangay::where('code', $this->getBarangayCode())->first()->name;
+        $barangay = Barangay::query()->where('code', $this->getBarangayCode())->first()->name;
 
         return [
             'name.unique' => "This establishment already exists in $barangay.",

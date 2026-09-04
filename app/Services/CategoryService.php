@@ -25,7 +25,7 @@ class CategoryService
 
     public function all(?int $perPage = 20): LengthAwarePaginator
     {
-        return Category::paginate($perPage, ['*'], 'page', null, null);
+        return Category::query()->paginate($perPage, ['*'], 'page');
     }
 
     public function create(array $data): Category
