@@ -38,10 +38,10 @@ class EstablishmentRepository
     {
         return Establishment::query()
             ->with(['storeType', 'barangay.munCity.province.region'])
-            ->when($data['store_type_id'], fn ($query, $value) => $query->ofStoreType($value))
-            ->when($data['barangay_code'], fn ($query, $value) => $query->ofStoreType($value))
-            ->when($data['mun_city_code'], fn ($query, $value) => $query->ofStoreType($value))
-            ->when($data['province_code'], fn ($query, $value) => $query->ofStoreType($value))
-            ->when($data['region_code'], fn ($query, $value) => $query->ofStoreType($value));
+            ->when($data['store_type_id'] ?? null, fn ($query, $value) => $query->ofStoreType($value))
+            ->when($data['barangay_code'] ?? null, fn ($query, $value) => $query->inBarangay($value))
+            ->when($data['mun_city_code'] ?? null, fn ($query, $value) => $query->inMunCity($value))
+            ->when($data['province_code'] ?? null, fn ($query, $value) => $query->inProvince($value))
+            ->when($data['region_code'] ?? null, fn ($query, $value) => $query->inRegion($value));
     }
 }

@@ -31,7 +31,9 @@ class EstablishmentService
     public function all(array $inputs): LengthAwarePaginator
     {
         // returns StoreType->id, else null
-        $inputs['store_type_id'] = optional($this->getStoreType($inputs['store_type']))->id;
+        $inputs['store_type_id'] = ! empty($inputs['store_type'])
+            ? $this->getStoreType($inputs['store_type'])->id
+            : null;
 
         // TODO - apply this for pagination: https://laravel.com/framework/docs/queries#query-pipes
         return $this->repo->getAll($inputs)->paginate($inputs['per_page'] ?? 20, ['*'], 'page');
