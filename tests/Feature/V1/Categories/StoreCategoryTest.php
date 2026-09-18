@@ -18,7 +18,7 @@ class StoreCategoryTest extends TestCase
     public function test_return_401_when_user_is_not_authenticated(): void
     {
         $data = [
-            'name' => fake()->word(),
+            'name' => fake()->words(2, true),
             'description' => fake()->text(),
         ];
 
@@ -75,7 +75,7 @@ class StoreCategoryTest extends TestCase
         $user = User::factory()->create();
 
         $data = [
-            'name' => fake()->word(),
+            'name' => fake()->words(2, true),
             'description' => fake()->text(),
         ];
 

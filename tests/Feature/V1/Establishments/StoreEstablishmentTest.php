@@ -124,21 +124,21 @@ class StoreEstablishmentTest extends TestCase
 
         $response
             ->assertCreated()
-            ->assertHeaderContains('Location', 'http://localhost' . $this->url)
+            ->assertHeaderContains('Location', 'http://localhost'.$this->url)
             ->assertJson(
-                fn(AssertableJson $json) => $json
+                fn (AssertableJson $json) => $json
                     ->has('links')
                     ->has(
                         'data',
-                        fn($json) => $json
+                        fn ($json) => $json
                             ->where('name', $data['name'])
                             ->has(
                                 'store_type',
-                                fn(AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
                             )
                             ->has(
                                 'address',
-                                fn(AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
                             )
                             ->etc(),
                     ),
@@ -165,21 +165,21 @@ class StoreEstablishmentTest extends TestCase
         // Assert First Request
         $response1
             ->assertCreated()
-            ->assertHeaderContains('Location', 'http://localhost' . $this->url)
+            ->assertHeaderContains('Location', 'http://localhost'.$this->url)
             ->assertJson(
-                fn(AssertableJson $json) => $json
+                fn (AssertableJson $json) => $json
                     ->has('links')
                     ->has(
                         'data',
-                        fn($json) => $json
+                        fn ($json) => $json
                             ->where('name', $data['name'])
                             ->has(
                                 'store_type',
-                                fn(AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
                             )
                             ->has(
                                 'address',
-                                fn(AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
                             )
                             ->etc(),
                     ),
@@ -188,21 +188,21 @@ class StoreEstablishmentTest extends TestCase
         // Assert Second Request, should return same data, but the status code is 200 OK
         $response2
             ->assertOk()
-            ->assertHeaderContains('Location', 'http://localhost' . $this->url)
+            ->assertHeaderContains('Location', 'http://localhost'.$this->url)
             ->assertJson(
-                fn(AssertableJson $json) => $json
+                fn (AssertableJson $json) => $json
                     ->has('links')
                     ->has(
                         'data',
-                        fn($json) => $json
+                        fn ($json) => $json
                             ->where('name', $data['name'])
                             ->has(
                                 'store_type',
-                                fn(AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('name', $storeType->name)->etc(),
                             )
                             ->has(
                                 'address',
-                                fn(AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
+                                fn (AssertableJson $json) => $json->where('barangay', $barangay->name)->etc(),
                             )
                             ->etc(),
                     ),
