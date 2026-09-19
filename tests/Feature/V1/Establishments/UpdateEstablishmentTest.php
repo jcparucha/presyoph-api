@@ -78,7 +78,7 @@ class UpdateEstablishmentTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrorFor('name', 'errors');
     }
 
-    public function test_return_422_validation_error_payload_must_be_a_string_test(): void
+    public function test_return_422_validation_error_payload_must_be_a_string(): void
     {
         $response = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->establishment->id, [
             'name' => ['test'],
@@ -89,7 +89,7 @@ class UpdateEstablishmentTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrorFor('name', 'errors');
     }
 
-    public function test_return_422_validation_error_non_existing_barangay_code_payload_test(): void
+    public function test_return_422_validation_error_non_existing_barangay_code_payload(): void
     {
         $response = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->establishment->id, [
             'barangay_code' => '1234567890',

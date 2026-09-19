@@ -54,7 +54,7 @@ class EstablishmentController extends Controller
      */
     public function update(UpdateEstablishmentRequest $request, Establishment $establishment)
     {
-        return !empty($request->validated())
+        return ! empty($request->validated())
             ? $this->establishmentService->update($request->validated(), $establishment)->toResource()
             : response()->noContent(); // because payload is optional, return 204 if PATCH payload is empty
     }
