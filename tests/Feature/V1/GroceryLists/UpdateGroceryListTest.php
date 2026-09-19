@@ -129,11 +129,10 @@ class UpdateGroceryListTest extends TestCase
 
         $url = $this->url.'/'.$groceryList->first()->slug;
 
-        $newData = ['name' => 'New Grocery List', 'description' => 'New Grocery List Description'];
-
         // $auth is not the owner of the grocery list, but still trying to update it.
         $response = $this->actingAs($auth, 'web')->patchJson($url, [
-            'name' => $newData,
+            'name' => 'New Grocery List',
+            'description' => 'New Grocery List Description',
         ]);
 
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.grocery_list')]);

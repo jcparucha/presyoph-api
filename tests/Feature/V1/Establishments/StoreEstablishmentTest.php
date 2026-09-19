@@ -85,7 +85,8 @@ class StoreEstablishmentTest extends TestCase
 
     public function test_return_422_validation_error_non_existing_barangay_code_payload(): void
     {
-        $storeType = StoreType::factory()->create()->first();
+        // create a record first
+        $storeType = StoreType::factory()->create();
 
         $response = $this->actingAs($this->auth, 'web')->postJson($this->url, [
             'name' => 'Lorem Ipsum Supermall',
@@ -98,7 +99,8 @@ class StoreEstablishmentTest extends TestCase
 
     public function test_return_422_validation_error_non_existing_store_type_payload(): void
     {
-        $barangay = Barangay::factory()->create()->first();
+        // create a record first
+        $barangay = Barangay::factory()->create();
 
         $response = $this->actingAs($this->auth, 'web')->postJson($this->url, [
             'name' => 'Lorem Ipsum Supermall',
@@ -109,10 +111,11 @@ class StoreEstablishmentTest extends TestCase
         $response->assertUnprocessable()->assertJsonValidationErrorFor('store_type', 'errors');
     }
 
-    public function test_return_201_created_when_successfully_creating_grocery_list(): void
+    public function test_return_201_created_when_successfully_creating_establishment(): void
     {
-        $barangay = Barangay::factory()->create()->first();
-        $storeType = StoreType::factory()->create()->first();
+        // create a record first
+        $barangay = Barangay::factory()->create();
+        $storeType = StoreType::factory()->create();
 
         $data = [
             'name' => 'Lorem Ipsum Supermall',
@@ -143,12 +146,18 @@ class StoreEstablishmentTest extends TestCase
                             ->etc(),
                     ),
             );
+
+        $this->assertDatabaseHas('establishments', [
+            'name' => $data['name'],
+            'store_type_id' => $storeType->id,
+            'barangay_code' => $barangay->code,
+        ]);
     }
 
     public function test_return_200_ok_on_idempotent_post(): void
     {
-        $barangay = Barangay::factory()->create()->first();
-        $storeType = StoreType::factory()->create()->first();
+        $barangay = Barangay::factory()->create();
+        $storeType = StoreType::factory()->create();
 
         $data = [
             'name' => 'Lorem Ipsum Supermall',
@@ -207,5 +216,11 @@ class StoreEstablishmentTest extends TestCase
                             ->etc(),
                     ),
             );
+
+        $this->assertDatabaseHas('establishments', [
+            'name' => $data['name'],
+            'store_type_id' => $storeType->id,
+            'barangay_code' => $barangay->code,
+        ]);
     }
 }

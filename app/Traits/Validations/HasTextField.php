@@ -26,8 +26,10 @@ trait HasTextField
         $this->assertShouldBeInArray(array_keys($specialChars), $type);
 
         return [
+            // $isRequired ? 'required' : 'sometimes',
+            ! $isRequired ? 'sometimes' : '',
+            'required',
             'string',
-            $isRequired ? 'required' : 'sometimes',
             'min:'.$min,
             'max:'.$max,
             new TextRule($allowSpace, $allowNumbers, $specialChars[$type]),
@@ -52,7 +54,9 @@ trait HasTextField
 
         return array_filter([
             'string',
-            $isRequired ? 'required' : 'sometimes',
+            // $isRequired ? 'required' : 'sometimes',
+            ! $isRequired ? 'sometimes' : '',
+            'required',
             $isNullable ? 'nullable' : '',
             'min:'.$min,
             'max:'.$max,
