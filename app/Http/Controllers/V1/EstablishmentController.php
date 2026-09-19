@@ -12,18 +12,14 @@ use App\Services\EstablishmentService;
 
 class EstablishmentController extends Controller
 {
-    public function __construct(
-        private EstablishmentService $establishmentService,
-    ) {}
+    public function __construct(private EstablishmentService $establishmentService) {}
 
     /**
      * Display a listing of the resource.
      */
     public function index(PaginationRequest $request)
     {
-        return EstablishmentResource::collection(
-            $this->establishmentService->all($request->validated()),
-        );
+        return EstablishmentResource::collection($this->establishmentService->all($request->validated()));
     }
 
     /**
@@ -31,9 +27,7 @@ class EstablishmentController extends Controller
      */
     public function store(StoreEstablishmentRequest $request)
     {
-        $newEstablishment = $this->establishmentService->create(
-            $request->validated(),
-        );
+        $newEstablishment = $this->establishmentService->create($request->validated());
 
         $newResourceLink = route('establishment.show', [
             'establishment' => $newEstablishment->id,
@@ -58,13 +52,11 @@ class EstablishmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(
-        UpdateEstablishmentRequest $request,
-        Establishment $establishment,
-    ) {
-        return $this->establishmentService
-            ->update($request->validated(), $establishment)
-            ->toResource();
+    public function update(UpdateEstablishmentRequest $request, Establishment $establishment)
+    {
+        return !empty($request->validated())
+            ? $this->establishmentService->update($request->validated(), $establishment)->toResource()
+            : response()->noContent(); // because payload is optional, return 204 if PATCH payload is empty
     }
 
     /**

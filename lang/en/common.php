@@ -13,6 +13,7 @@ return [
     'not_found' => [
         'brand' => 'Brand not found.',
         'category' => 'Category not found.',
+        'establishment' => 'Establishment not found.',
         'grocery_list' => 'Grocery list not found.',
     ],
 ];
