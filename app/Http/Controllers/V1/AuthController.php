@@ -30,20 +30,14 @@ class AuthController extends Controller
         $status = $this->authService->login($request->all());
 
         $statusCode = 200;
-        $data['messages'] = CredentialStatus::VALID->message();
+        $data['message'] = CredentialStatus::VALID->message();
 
         if ($status !== CredentialStatus::VALID->name) {
             $statusCode = 422;
 
-            $data['messages'] =
-                $status === CredentialStatus::INVALID->name
-                    ? CredentialStatus::INVALID->message()
-                    : CredentialStatus::NON_EXISTENT->message();
-
-            $data['errors']['system'][] =
-                $status === CredentialStatus::INVALID->name
-                    ? CredentialStatus::INVALID->message()
-                    : CredentialStatus::NON_EXISTENT->message();
+            // non-existent or invalid credentials default error message
+            $data['message'] = CredentialStatus::NON_EXISTENT->message();
+            $data['errors']['system'][] = CredentialStatus::NON_EXISTENT->message();
         }
 
         return response()->json($data, $statusCode);
