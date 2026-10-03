@@ -16,7 +16,10 @@ class UpdateEstablishmentAction
     public function handle(Establishment $establishment, array $data): ?Establishment
     {
         try {
-            return $this->repo->update($establishment, $data);
+            return $this->repo
+                ->update($establishment, $data)
+                ->load(['storeType', 'barangay.munCity.province.region'])
+                ->refresh();
         } catch (\Exception $e) {
             Log::error(__CLASS__.': '.$e->getMessage());
 

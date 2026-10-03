@@ -17,8 +17,6 @@ class EstablishmentService
 
     private $fields = ['name', 'barangay_code', 'store_type'];
 
-    private $eagerLoad = ['storeType', 'barangay.munCity.province.region'];
-
     /**
      * Create a new class instance.
      */
@@ -42,14 +40,15 @@ class EstablishmentService
     public function show(Establishment $establishment): Establishment
     {
         // eager load connections
-        return $establishment->load($this->eagerLoad);
+        return $establishment->load(['storeType', 'barangay.munCity.province.region']);
     }
 
     public function create(array $data): Establishment
     {
-        return $this->firstOrCreateAction
-            ->handle([...$data, 'store_type_id' => $this->getStoreType($data['store_type'])->id])
-            ->load($this->eagerLoad);
+        return $this->firstOrCreateAction->handle([
+            ...$data,
+            'store_type_id' => $this->getStoreType($data['store_type'])->id,
+        ]);
     }
 
     public function update(array $inputs, Establishment $establishment): Establishment
@@ -59,7 +58,7 @@ class EstablishmentService
             $inputs['store_type_id'] = $this->getStoreType($inputs['store_type'])->id;
         }
 
-        return $this->updateAction->handle($establishment, $inputs)->load($this->eagerLoad)->refresh();
+        return $this->updateAction->handle($establishment, $inputs);
     }
 
     /**

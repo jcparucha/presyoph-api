@@ -16,7 +16,7 @@ class UpdateCategoryAction
     public function handle(Category $category, array $data): ?Category
     {
         try {
-            return $this->categoryRepo->update($category, $data);
+            return $this->categoryRepo->update($category, $data)->refresh();
         } catch (\Exception $e) {
             Log::error(__CLASS__.': '.$e->getMessage());
 

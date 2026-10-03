@@ -16,7 +16,7 @@ class UpdateBrandNameAction
     public function handle(Brand $brand, string $name): ?Brand
     {
         try {
-            return $this->brandRepo->update($brand, $name);
+            return $this->brandRepo->update($brand, $name)->refresh();
         } catch (\Exception $e) {
             Log::error(__CLASS__.': '.$e->getMessage());
 

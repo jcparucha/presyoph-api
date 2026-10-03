@@ -33,9 +33,7 @@ class BrandService
 
     public function update(Brand $brand, array $inputs): Brand
     {
-        $this->updateBrandNameAction->handle($brand, $inputs['name']);
-
-        return $brand->refresh();
+        return $this->updateBrandNameAction->handle($brand, $inputs['name']);
     }
 
     /**

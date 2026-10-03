@@ -35,9 +35,7 @@ class CategoryService
 
     public function update(array $data, Category $category): Category
     {
-        $this->updateCategoryAction->handle($category, $data);
-
-        return $category->refresh();
+        return $this->updateCategoryAction->handle($category, $data);
     }
 
     /**

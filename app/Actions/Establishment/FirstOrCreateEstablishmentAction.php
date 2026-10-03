@@ -22,7 +22,9 @@ class FirstOrCreateEstablishmentAction
         try {
             $this->assertShouldHaveKeys(['name', 'barangay_code', 'store_type_id'], $data);
 
-            return $this->repo->firstOrCreate($this->userRepo->getAuthUser(), $data);
+            return $this->repo
+                ->firstOrCreate($this->userRepo->getAuthUser(), $data)
+                ->load(['storeType', 'barangay.munCity.province.region']);
         } catch (\Exception $e) {
             Log::error(__CLASS__.': '.$e->getMessage());
 
