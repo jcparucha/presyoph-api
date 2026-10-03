@@ -15,16 +15,20 @@ class CategoryRepository
 
     public function firstOrCreate(User $user, array $data): ?Category
     {
-        return $user
-            ->categories()
-            ->firstOrCreate(['name' => $data['name']], ['description' => $data['description'] ?? null]);
+        return Category::query()->firstOrCreate(
+            ['name' => $data['name']],
+            [
+                'description' => $data['description'] ?? null,
+                'added_by' => $user->id,
+            ],
+        );
     }
 
     public function update(Category $category, array $data): Category
     {
         $category->fill($data);
 
-        // if changes on name has changed, update the slug
+        // if name has changes, update the slug
         // TODO - move to observer for Updating and Creating
         if ($category->isDirty('name') && Str::lower($category->name) !== Str::lower($data['name'])) {
             $category->slug = generate_unique_slug($data['name']);

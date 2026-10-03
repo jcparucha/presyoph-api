@@ -15,13 +15,14 @@ class EstablishmentRepository
 
     public function firstOrCreate(User $user, array $data): Establishment
     {
-        return $user->establishments()->firstOrCreate(
+        return Establishment::query()->firstOrCreate(
             [
                 'name' => $data['name'],
                 'barangay_code' => $data['barangay_code'],
             ],
             [
                 'store_type_id' => $data['store_type_id'],
+                'added_by' => $user->id,
             ],
         );
     }

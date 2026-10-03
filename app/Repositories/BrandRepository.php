@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Brand;
 use App\Models\User;
 use App\Traits\AssertionTrait;
+use Illuminate\Support\Str;
 
 class BrandRepository
 {
@@ -17,13 +18,20 @@ class BrandRepository
 
     public function firstOrCreate(User $user, string $name): Brand
     {
-        return $user->brands()->firstOrCreate(['name' => $name]);
+        return Brand::query()->firstOrCreate(['name' => $name], ['added_by' => $user->id]);
     }
 
     public function update(Brand $brand, string $name): Brand
     {
         $brand->name = $name;
-        $brand->slug = generate_unique_slug($name);
+
+        // if name has changes, update the slug
+        // TODO - move to observer for Updating and Creating
+        if ($brand->isDirty('name') && Str::lower($brand->name) !== Str::lower('name')) {
+            $brand->slug = generate_unique_slug($name);
+        }
+
+        // `save()` already handles the dirty check
         $brand->save();
 
         return $brand;
