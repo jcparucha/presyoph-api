@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\Products\UpdateProductAction;
 use App\Models\Product;
 use App\Models\Unit;
 use App\Traits\AssertionTrait;
@@ -9,13 +10,10 @@ use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class ProductService
 {
     use AssertionTrait;
-
-    private $fields = ['name', 'weight', 'unit_id', 'brand_id'];
 
     private $eagerLoad = [
         'brand',
@@ -36,6 +34,7 @@ class ProductService
         private EstablishmentService $establishmentService,
         private ProductPriceService $productPriceService,
         private TagService $tagService,
+        private UpdateProductAction $updateAction
     ) {
         //
     }
@@ -116,89 +115,6 @@ class ProductService
 
     public function update(array $inputs, Product $product): Product
     {
-        $data = $this->generateProductData($product, $inputs);
-
-        $this->validateIfUniqueProduct($data);
-
-        $this->updateProduct($product, $data);
-
-        // call refresh() to re-hydrate the product
-        return $product->refresh();
-    }
-
-    public function delete(string $id): void {}
-
-    protected function generateProductData(Product $product, array $inputs): array
-    {
-        $unit = isset($inputs['unit']) ? Unit::ofUnit($inputs['unit'])->first()->id : $product->unit_id;
-
-        $brand = isset($inputs['brand'])
-            ? $this->brandService->firstOrCreate(['name' => $inputs['brand']])->id
-            : $product->brand_id;
-
-        $category = isset($inputs['category'])
-            ? $this->categoryService->firstOrCreate([
-                'description' => '',
-                ...$inputs['category'],
-            ])->id
-            : $product->category_id;
-
-        $name = $inputs['name'] ?? $product->name;
-
-        $weight = isset($inputs['weight']) ? intval($inputs['weight']) : $product->weight;
-
-        return [
-            'id' => $product->id,
-            'name' => $name,
-            'weight' => $weight,
-            'unit_id' => $unit,
-            'brand_id' => $brand,
-            'category_id' => $category,
-        ];
-    }
-
-    /**
-     * Check if the changes being made in the product is already exists
-     *
-     * A product should be unique by its Brand, Name, Weight, and Unit
-     */
-    protected function validateIfUniqueProduct(array $data): void
-    {
-        $this->assertShouldHaveKeys(['id', ...$this->fields], $data);
-
-        $product = Product::whereNot('id', $data['id'])
-            ->where('name', $data['name'])
-            ->where('weight', $data['weight'])
-            ->where('unit_id', $data['unit_id'])
-            ->where('brand_id', $data['brand_id'])
-            ->first();
-
-        if (! is_null($product)) {
-            throw ValidationException::withMessages([
-                'system' => __('validation.unique', [
-                    'attribute' => 'product',
-                ]),
-            ]);
-        }
-    }
-
-    protected function updateProduct(Product $product, array $data): void
-    {
-        $fields = ['id', 'category_id', ...$this->fields];
-
-        $this->assertShouldHaveKeys($fields, $data);
-
-        $this->assertShouldBeInteger($data['weight']);
-
-        foreach ($fields as $field) {
-            if ($data[$field] !== $product->$field) {
-                $product->$field = $data[$field];
-            }
-        }
-
-        // save if have changes made
-        if ($product->isDirty()) {
-            $product->save();
-        }
+        return $this->updateAction->handle($product, $inputs);
     }
 }

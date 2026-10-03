@@ -13,6 +13,7 @@ use App\Traits\AssertionTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -64,8 +65,10 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product): JsonResource
+    public function update(UpdateProductRequest $request, Product $product): JsonResource|Response
     {
-        return $this->productService->update($request->validated(), $product)->toResource();
+        return ! empty($request->validated())
+          ? $this->productService->update($request->validated(), $product)->toResource()
+          : response()->noContent(); // because payload is optional, return 204 if PATCH payload is empty;
     }
 }

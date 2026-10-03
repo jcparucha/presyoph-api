@@ -182,6 +182,9 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'validation' => [
+            'unique_product' => 'The product already exist.',
+        ],
     ],
 
     /*

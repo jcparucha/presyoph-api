@@ -15,5 +15,6 @@ return [
         'category' => 'Category not found.',
         'establishment' => 'Establishment not found.',
         'grocery_list' => 'Grocery list not found.',
+        'product' => 'Product not found.',
     ],
 ];
