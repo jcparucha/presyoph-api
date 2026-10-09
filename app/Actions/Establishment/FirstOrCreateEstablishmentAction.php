@@ -6,6 +6,7 @@ use App\Models\Establishment;
 use App\Repositories\EstablishmentRepository;
 use App\Repositories\UserRepository;
 use App\Traits\AssertionTrait;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class FirstOrCreateEstablishmentAction
@@ -25,11 +26,10 @@ class FirstOrCreateEstablishmentAction
             return $this->repo
                 ->firstOrCreate($this->userRepo->getAuthUser(), $data)
                 ->load(['storeType', 'barangay.munCity.province.region']);
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on saving the establishment.', 0, $e);
         }
     }
 }

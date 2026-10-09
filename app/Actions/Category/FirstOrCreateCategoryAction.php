@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\UserRepository;
 use App\Traits\AssertionTrait;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class FirstOrCreateCategoryAction
@@ -23,11 +24,10 @@ class FirstOrCreateCategoryAction
             $this->assertShouldHaveKeys(['name', 'description'], $data);
 
             return $this->categoryRepo->firstOrCreate($this->userRepo->getAuthUser(), $data);
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on saving the category.', 0, $e);
         }
     }
 }

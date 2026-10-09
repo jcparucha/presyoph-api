@@ -4,6 +4,7 @@ namespace App\Actions\Establishment;
 
 use App\Models\Establishment;
 use App\Repositories\EstablishmentRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class UpdateEstablishmentAction
@@ -20,11 +21,10 @@ class UpdateEstablishmentAction
                 ->update($establishment, $data)
                 ->load(['storeType', 'barangay.munCity.province.region'])
                 ->refresh();
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on updating the establishment.', 0, $e);
         }
     }
 }

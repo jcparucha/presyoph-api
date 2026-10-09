@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Repositories\BrandRepository;
 use App\Repositories\UserRepository;
 use App\Traits\AssertionTrait;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class FirstOrCreateBrandAction
@@ -23,11 +24,10 @@ class FirstOrCreateBrandAction
             $this->assertShouldHaveKeys(['name'], $data);
 
             return $this->brandRepo->firstOrCreate($this->userRepo->getAuthUser(), $data['name']);
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on saving the brand.', 0, $e);
         }
     }
 }

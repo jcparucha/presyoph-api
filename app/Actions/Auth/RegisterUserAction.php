@@ -4,6 +4,7 @@ namespace App\Actions\Auth;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -28,11 +29,10 @@ class RegisterUserAction
 
                 return $newUser;
             });
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on registering the user.', 0, $e);
         }
     }
 }

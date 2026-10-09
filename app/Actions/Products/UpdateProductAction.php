@@ -41,7 +41,6 @@ class UpdateProductAction
         } catch (QueryException $e) {
             Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
             throw new \RuntimeException('Something went wrong on saving the product.', 0, $e);
         }
     }

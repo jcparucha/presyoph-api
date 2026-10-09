@@ -4,6 +4,7 @@ namespace App\Actions\Brand;
 
 use App\Models\Brand;
 use App\Repositories\BrandRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class UpdateBrandNameAction
@@ -17,11 +18,10 @@ class UpdateBrandNameAction
     {
         try {
             return $this->brandRepo->update($brand, $name)->refresh();
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on updating the brand.', 0, $e);
         }
     }
 }

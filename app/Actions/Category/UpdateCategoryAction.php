@@ -4,6 +4,7 @@ namespace App\Actions\Category;
 
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class UpdateCategoryAction
@@ -17,11 +18,10 @@ class UpdateCategoryAction
     {
         try {
             return $this->categoryRepo->update($category, $data)->refresh();
-        } catch (\Exception $e) {
-            Log::error(__CLASS__.': '.$e->getMessage());
+        } catch (QueryException $e) {
+            Log::error(__CLASS__.': Database error - '.$e->getMessage());
 
-            // TODO: Should throw exception error
-            return null;
+            throw new \RuntimeException('Something went wrong on updating the category.', 0, $e);
         }
     }
 }
