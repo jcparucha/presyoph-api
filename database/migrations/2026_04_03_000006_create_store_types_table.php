@@ -16,10 +16,8 @@ return new class extends Migration
             $table->collation('utf8mb4_unicode_ci');
 
             $table->id();
-            $table->string('name', length: 100);
-            $table->string('slug', length: 100);
-
-            $table->unique(['name', 'slug']);
+            $table->string('name', length: 100)->unique();
+            $table->string('slug', length: 100)->unique();
         });
     }
 
