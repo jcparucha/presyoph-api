@@ -57,6 +57,22 @@ class UpdateProductTest extends TestCase
             ->assertJsonValidationErrors(['name', 'weight', 'unit', 'brand', 'category.name'], 'errors');
     }
 
+    public function test_return_422_validation_error_payload_unsupported_special_characters(): void
+    {
+        $data = [
+            'invalid' => [
+                'name' => 'Test ^_^',
+                'brand' => 'Test ^_^',
+                'category' => ['name' => 'Test ^_^'],
+            ],
+            'keys' => ['name', 'brand', 'category.name'],
+        ];
+
+        $response = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->product->id, $data['invalid']);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+    }
+
     public function test_return_422_validation_error_payload_min_max_characters()
     {
         $url = $this->url.$this->product->id;

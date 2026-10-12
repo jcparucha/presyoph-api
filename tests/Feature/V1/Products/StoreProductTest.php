@@ -32,7 +32,146 @@ class StoreProductTest extends TestCase
         $response->assertUnauthorized()->assertJson(['error' => 'Unauthenticated.']);
     }
 
-    // TODO add validation testing
+    public function test_return_422_validation_error_payload_required()
+    {
+        // empty payload
+        $response = $this->actingAs($this->auth, 'web')->postJson($this->url, []);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(
+                [
+                    'name',
+                    'weight',
+                    'unit',
+                    'brand',
+                    'price',
+                    'category.name',
+                    'establishment.name',
+                    'establishment.barangay_code',
+                    'establishment.store_type',
+                ],
+                'errors',
+            );
+    }
+
+    public function test_return_422_validation_error_payload_unsupported_special_characters(): void
+    {
+        $data = [
+            'invalid' => [
+                'name' => 'Test ^_^',
+                'brand' => 'Test ^_^',
+                'category' => ['name' => 'Test ^_^', 'description' => '^^^ description ^^^'],
+                'establishment' => ['name' => 'Test ^_^'],
+                'tags' => ['Test ^_^'],
+            ],
+            'keys' => ['name', 'brand', 'category.name', 'category.description', 'establishment.name', 'tags.0'],
+        ];
+
+        $response = $this->actingAs($this->auth, 'web')->postJson($this->url, $data['invalid']);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_min_max_characters()
+    {
+        $data = [
+            'min' => [
+                'name' => 'as',
+                'brand' => 'df',
+                'establishment' => ['name' => 'gh'],
+                'category' => ['name' => 'gh', 'description' => 'as'],
+            ],
+            'max' => [
+                'name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'brand' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'establishment' => ['name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'],
+                'category' => [
+                    'name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                    'description' => fake()->paragraph(260, 270),
+                ],
+            ],
+            'keys' => ['name', 'brand', 'category.name', 'category.description', 'establishment.name'],
+        ];
+
+        // Assert min characters is 3
+        $response1 = $this->actingAs($this->auth, 'web')->postJson($this->url, $data['min']);
+        // assert max characters is 50
+        $response2 = $this->actingAs($this->auth, 'web')->postJson($this->url, $data['max']);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response1->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_weight_min_max_value()
+    {
+        // Assert min is 1
+        $response1 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'weight' => 0,
+        ]);
+        // assert max is 10000
+        $response2 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'weight' => 100001,
+        ]);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response1->assertUnprocessable()->assertJsonValidationErrorFor('weight', 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrorFor('weight', 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_price_value()
+    {
+        // Assert min is 0.01
+        $response1 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'price' => 0.00123456,
+        ]);
+        // assert max is 999999.99
+        $response2 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'price' => 1000000,
+        ]);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response1->assertUnprocessable()->assertJsonValidationErrorFor('price', 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrorFor('price', 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_tags_value()
+    {
+        // tags should be an array
+        $response1 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'tags' => "I'm a string",
+        ]);
+
+        // tag items is following the name rule: min of 3, max of 25
+        $response2 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'tags' => ['as', 'asdfg qwert zxcvb tyuio ghjkl'],
+        ]);
+
+        // tag items should be distinct
+        $response3 = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'tags' => ['food', 'food'],
+        ]);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response1->assertUnprocessable()->assertJsonValidationErrorFor('tags', 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrors(['tags.0', 'tags.1'], 'errors');
+        $response3->assertUnprocessable()->assertJsonValidationErrors(['tags.0', 'tags.1'], 'errors');
+    }
+
+    public function test_return_422_validation_error_non_existing_payload()
+    {
+        $response = $this->actingAs($this->auth, 'web')->postJson($this->url, [
+            'unit' => 'unit',
+            'establishment' => ['barangay_code' => '100010101', 'store_type' => 'fake store'],
+        ]);
+
+        // note that other payload have a 'required' error, but this test only targets a specific payload
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['unit', 'establishment.barangay_code', 'establishment.store_type'], 'errors');
+    }
 
     public function test_return_201_created_when_successfully_creating_product(): void
     {

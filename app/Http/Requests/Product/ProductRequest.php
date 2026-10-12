@@ -44,7 +44,9 @@ class ProductRequest extends FormRequest
                 }
 
                 if ($key === 'tags') {
-                    $names['tags'] = array_map(fn ($value) => Str::squish($value), array_filter($this->tags));
+                    $names['tags'] = is_string($this->tags)
+                        ? $this->tags // just pass the value so it will be validated properly
+                        : array_map(fn ($value) => Str::squish($value), array_filter($this->tags));
                 }
             }
         }
