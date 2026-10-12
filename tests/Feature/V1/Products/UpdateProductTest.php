@@ -35,7 +35,6 @@ class UpdateProductTest extends TestCase
 
     public function test_return_404_not_found_on_non_existing_product(): void
     {
-        // no Grocery List on this slug
         $response = $this->actingAs($this->auth)->patchJson($this->url.'999999', [
             'name' => 'Test Name',
         ]);
@@ -43,7 +42,71 @@ class UpdateProductTest extends TestCase
         $response->assertNotFound()->assertJson(['error' => __('common.not_found.product')]);
     }
 
-    // TODO add more tests like validations
+    public function test_return_422_validation_error_payload_required()
+    {
+        $response = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->product->id, [
+            'name' => '',
+            'weight' => '',
+            'unit' => '',
+            'brand' => '',
+            'category' => ['name' => ''],
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['name', 'weight', 'unit', 'brand', 'category.name'], 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_min_max_characters()
+    {
+        $url = $this->url.$this->product->id;
+
+        $data = [
+            'min' => [
+                'name' => 'as',
+                'brand' => 'df',
+                'category' => ['name' => 'gh'],
+            ],
+            'max' => [
+                'name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'brand' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'category' => ['name' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'],
+            ],
+            'keys' => ['name', 'brand', 'category.name'],
+        ];
+
+        // Assert min characters is 3
+        $response1 = $this->actingAs($this->auth, 'web')->patchJson($url, $data['min']);
+        // assert max characters is 50
+        $response2 = $this->actingAs($this->auth, 'web')->patchJson($url, $data['max']);
+
+        $response1->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrors($data['keys'], 'errors');
+    }
+
+    public function test_return_422_validation_error_payload_weight_min_max_value()
+    {
+        // Assert min is 1
+        $response1 = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->product->id, [
+            'weight' => 0,
+        ]);
+        // assert max is 10000
+        $response2 = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->product->id, [
+            'weight' => 100001,
+        ]);
+
+        $response1->assertUnprocessable()->assertJsonValidationErrorFor('weight', 'errors');
+        $response2->assertUnprocessable()->assertJsonValidationErrorFor('weight', 'errors');
+    }
+
+    public function test_return_422_validation_error_non_existing_unit_payload()
+    {
+        $response = $this->actingAs($this->auth, 'web')->patchJson($this->url.$this->product->id, [
+            'unit' => 'unit',
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrorFor('unit', 'errors');
+    }
 
     public function test_return_422_validation_unique_product(): void
     {
