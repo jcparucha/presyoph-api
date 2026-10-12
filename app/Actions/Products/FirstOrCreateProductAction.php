@@ -7,6 +7,7 @@ use App\Actions\Category\FirstOrCreateCategoryAction;
 use App\Actions\Establishment\FirstOrCreateEstablishmentAction;
 use App\Actions\FirstOrCreatePriceAction;
 use App\Models\Product;
+use App\Models\StoreType;
 use App\Models\Unit;
 use App\Repositories\ProductRepository;
 use App\Repositories\TagRepository;
@@ -60,7 +61,10 @@ class FirstOrCreateProductAction
                     'category_id' => $category->id,
                 ]);
 
-                $establishment = $this->focEstablishmentAction->handle($data['establishment']);
+                $establishment = $this->focEstablishmentAction->handle([
+                    ...$data['establishment'],
+                    'store_type_id' => StoreType::ofType($data['establishment']['store_type'])->first()->id,
+                ]);
 
                 // only create initial price for new product on an establishment
                 $this->focPriceAction->handle([
