@@ -92,7 +92,7 @@ class TagRepository
         $user = $this->userRepo->getAuthUser();
 
         // if have new tag, insert to DB
-        $user->tags()->createMany([$nonExistingTags]);
+        $user->tags()->createMany($nonExistingTags);
 
         // get all tag ids.
         return Tag::whereIn('name', $tags)->get()->map(fn (Tag $tag) => $tag->id)->all();
