@@ -3,7 +3,6 @@
 namespace Tests\Feature\V1\Products;
 
 use App\Models\Barangay;
-use App\Models\Product;
 use App\Models\StoreType;
 use App\Models\Unit;
 use App\Models\User;
@@ -17,8 +16,6 @@ class StoreProductTest extends TestCase
 
     private User $auth;
 
-    // private Product $product;
-
     private $url = '/api/v1/products/';
 
     protected function setUp(): void
@@ -26,7 +23,6 @@ class StoreProductTest extends TestCase
         parent::setUp();
 
         $this->auth = User::factory()->create();
-        // $this->product = Product::factory()->for($this->auth)->create();
     }
 
     public function test_return_401_when_user_is_not_authenticated(): void
